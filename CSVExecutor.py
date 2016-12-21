@@ -34,3 +34,4 @@ def to_dataset_format(data, header):
         formatted.append(freq_t)
     return formatted
 
+print(read_csv('sad_test.csv'))

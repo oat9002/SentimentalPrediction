@@ -1,8 +1,10 @@
 from pythainlp.segment import segment
+import re
 
 
 def word_cleaning(word):
-    return word.replace(" ", "")
+    temp = re.sub(r'[^ก-ูเ-์]', '', word)
+    return temp
 
 
 def create_keyword_thaionly(word_arr):
@@ -39,4 +41,3 @@ def frequency_occur_in_keyword(word, keyword):
 # key = create_keyword_thaionly(library)
 # print(key)
 # print(sorted(frequency_occur_in_keyword(word = library[0], keyword = key).keys()))
-

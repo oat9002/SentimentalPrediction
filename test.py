@@ -1,7 +1,7 @@
 import CSVExecutor
 import WordExecutor
 
-library = CSVExecutor.read_csv('test.csv')
+library = CSVExecutor.read_csv('sad_test.csv')
 words = []
 for li in library:
     words.append(li[0])
