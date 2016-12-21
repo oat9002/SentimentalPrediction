@@ -1,11 +1,15 @@
 from pythainlp.segment import segment
 
 
+def word_cleaning(word):
+    return word.replace(" ", "")
+
+
 def create_keyword_thaionly(word_arr):
     keywords = []
     exist = False
     for item in word_arr:
-        segmented_word = segment(item)
+        segmented_word = segment(word_cleaning(item))
         for sw in segmented_word:
             for existedWord in keywords:
                 if sw == existedWord:
@@ -15,7 +19,6 @@ def create_keyword_thaionly(word_arr):
                 keywords.append(sw)
             exist = False
     return keywords
-
 
 def frequency_occur_in_keyword(word, keyword):
     freq_table = {}
@@ -30,9 +33,10 @@ def frequency_occur_in_keyword(word, keyword):
 
 
 # library = []
-# library.append("ฉันอยากไปที่นั่นจังเลย")
-# library.append("ฉันอยู่ที่นี่มีความสุขจัง")
-# library.append("ฉันอยากไปอีกจัง")
+# library.append("ฉันอยากไปที่  นั่นจังเลย")
+# library.append("ฉันอยู่ที่นี่มี ความสุขจัง")
+# library.append("ฉันอยาก ไปอีก จัง")
 # key = create_keyword_thaionly(library)
 # print(key)
 # print(sorted(frequency_occur_in_keyword(word = library[0], keyword = key).keys()))
+
