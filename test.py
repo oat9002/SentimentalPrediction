@@ -14,7 +14,7 @@ trigram = WordExecutor.create_keyword_trigram(words)
 # print(trigram)
 
 mergedArr = unigram + bigram + trigram
-print(mergedArr)
+# print(mergedArr)
 freq = []
 for li in library:
     li[0] = WordExecutor.frequency_occur_in_keyword(li[0], mergedArr, 3)
