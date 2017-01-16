@@ -22,6 +22,41 @@ def create_keyword_thaionly(word_arr):
             exist = False
     return keywords
 
+
+def create_keyword_bigram(word_arr):
+    bigram = []
+    exist = False
+    for item in word_arr:
+        segmented_word = segment(word_cleaning(item))
+        for idx in range(0, len(segmented_word)):
+            if idx < (len(segmented_word) - 1):
+                bi_str = segmented_word[idx] + segmented_word[idx + 1]
+                for existedWord in bigram:
+                    if bi_str == existedWord:
+                        exist = True
+                        break
+                if not exist:
+                    bigram.append(bi_str)
+    return bigram
+
+
+def create_keyword_trigram(word_arr):
+    trigram = []
+    exist = False
+    for item in word_arr:
+        segmented_word = segment(word_cleaning(item))
+        for idx in range(0, len(segmented_word)):
+            if idx < (len(segmented_word) - 2):
+                bi_str = segmented_word[idx] + segmented_word[idx + 1] + segmented_word[idx + 2]
+                for existedWord in trigram:
+                    if bi_str == existedWord:
+                        exist = True
+                        break
+                if not exist:
+                    trigram.append(bi_str)
+    return trigram
+
+
 def frequency_occur_in_keyword(word, keyword):
     freq_table = {}
     for w in keyword:
