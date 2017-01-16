@@ -1,13 +1,17 @@
 from pythainlp.segment import segment
 import re
 
-
+"""
+word: any words you want to clean
+"""
 def word_cleaning(word):
     temp = re.sub(r'[^ก-ูเ-์]', '', word)
     return temp
 
-
-def create_keyword_thaionly(word_arr):
+"""
+word_arr: list of words from file.
+"""
+def create_keyword_unigram(word_arr):
     keywords = []
     exist = False
     for item in word_arr:
@@ -23,6 +27,9 @@ def create_keyword_thaionly(word_arr):
     return keywords
 
 
+"""
+word_arr: list of words from file.
+"""
 def create_keyword_bigram(word_arr):
     bigram = []
     exist = False
@@ -39,7 +46,9 @@ def create_keyword_bigram(word_arr):
                     bigram.append(bi_str)
     return bigram
 
-
+"""
+word_arr: list of words from file.
+"""
 def create_keyword_trigram(word_arr):
     trigram = []
     exist = False
@@ -57,16 +66,51 @@ def create_keyword_trigram(word_arr):
     return trigram
 
 
-def frequency_occur_in_keyword(word, keyword):
+"""
+word:       sentence you want to count frequency
+keyword:    array of keyword
+maxGram:    max gram
+"""
+
+
+def frequency_occur_in_keyword(word, keyword, maxGram):
     freq_table = {}
+    segmented_word = []
     for w in keyword:
         freq_table[w] = 0
-    segmented_word = segment(word)
+    for t in range(0, maxGram):
+        if t == 0:
+            segmented_word = createNgram(word, t)
+        else:
+            segmented_word = segmented_word + createNgram(word, t)
+    print(segmented_word)
     for sw in segmented_word:
         for kw in keyword:
             if sw == kw:
                 freq_table[kw] = freq_table[kw] + 1
     return freq_table
+
+"""
+word: word you want to create N-gram
+type:   1 - unigram
+        2 - bigram
+        3 - trigram
+"""
+
+
+def createNgram(word, type):
+    segmented_word = segment(word_cleaning(word))
+    ret_word = []
+    for idx in range(0, len(segmented_word)):
+        w_str = ""
+        if idx < (len(segmented_word) - (type - 1)):
+            for i in range(0, type):
+                if i == 0:
+                    w_str = segmented_word[idx + i]
+                else:
+                    w_str = w_str + segmented_word[idx + i]
+        ret_word.append(w_str)
+    return ret_word
 
 
 # library = []
