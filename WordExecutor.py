@@ -106,6 +106,7 @@ def frequency_occur_in_keyword(word, keyword, maxGram):
     #     for kw in keyword:
     #         if sw == kw:
     #             freq_table[kw] = freq_table[kw] + 1
+
     for kw in keyword:
         freq_table[kw] = segmented_word.count(kw)
     return freq_table

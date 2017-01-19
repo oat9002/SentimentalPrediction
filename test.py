@@ -12,7 +12,7 @@ bigram = WordExecutor.create_ngram_bynltk(words, 2)
 trigram = WordExecutor.create_ngram_bynltk(words, 3)
 
 mergedArr = unigram + bigram + trigram
-print(mergedArr)
+# print(mergedArr)
 freq = []
 for li in library:
     li[0] = WordExecutor.frequency_occur_in_keyword(li[0], mergedArr, 3)
