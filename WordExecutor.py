@@ -1,5 +1,7 @@
 from pythainlp.segment import segment
 import re
+from nltk.util import ngrams
+
 
 """
 word: any words you want to clean
@@ -7,6 +9,21 @@ word: any words you want to clean
 def word_cleaning(word):
     temp = re.sub(r'[^ก-ูเ-์]', '', word)
     return temp
+
+"""
+word_array: list of words
+gram : N-gram you want
+"""
+
+def create_ngram_bynltk(word_arr, gram):
+    keywords = []
+    for item in word_arr:
+        segmented_word = segment(word_cleaning(item))
+        grams = ngrams(segmented_word, gram)
+        for t in grams:
+            keywords.append(''.join(t))
+    return list(set(keywords))
+
 
 """
 word_arr: list of words from file.
