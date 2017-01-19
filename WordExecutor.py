@@ -44,6 +44,7 @@ def create_keyword_bigram(word_arr):
                         break
                 if not exist:
                     bigram.append(bi_str)
+                exist = False
     return bigram
 
 """
@@ -63,6 +64,7 @@ def create_keyword_trigram(word_arr):
                         break
                 if not exist:
                     trigram.append(bi_str)
+                exist = False
     return trigram
 
 
