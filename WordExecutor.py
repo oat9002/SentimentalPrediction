@@ -102,10 +102,12 @@ def frequency_occur_in_keyword(word, keyword, maxGram):
             segmented_word = createNgram(word, t)
         else:
             segmented_word = segmented_word + createNgram(word, t)
-    for sw in segmented_word:
-        for kw in keyword:
-            if sw == kw:
-                freq_table[kw] = freq_table[kw] + 1
+    # for sw in segmented_word:
+    #     for kw in keyword:
+    #         if sw == kw:
+    #             freq_table[kw] = freq_table[kw] + 1
+    for kw in keyword:
+        freq_table[kw] = segmented_word.count(kw)
     return freq_table
 
 """
@@ -116,18 +118,21 @@ type:   1 - unigram
 """
 
 
-def createNgram(word, type):
+def createNgram(word, gram):
     segmented_word = segment(word_cleaning(word))
     ret_word = []
-    for idx in range(0, len(segmented_word)):
-        w_str = ""
-        if idx < (len(segmented_word) - (type - 1)):
-            for i in range(0, type):
-                if i == 0:
-                    w_str = segmented_word[idx + i]
-                else:
-                    w_str = w_str + segmented_word[idx + i]
-            ret_word.append(w_str)
+    # for idx in range(0, len(segmented_word)):
+    #     w_str = ""
+    #     if idx < (len(segmented_word) - (gram - 1)):
+    #         for i in range(0, gram):
+    #             if i == 0:
+    #                 w_str = segmented_word[idx + i]
+    #             else:
+    #                 w_str = w_str + segmented_word[idx + i]
+    #         ret_word.append(w_str)
+    grams = ngrams(segmented_word, gram)
+    for t in grams:
+        ret_word.append(''.join(t))
     return ret_word
 
 
