@@ -15,7 +15,7 @@ word_array: list of words
 gram : N-gram you want
 """
 
-def create_ngram_bynltk(word_arr, gram):
+def create_ngram_from_list_bynltk(word_arr, gram):
     keywords = []
     for item in word_arr:
         segmented_word = segment(word_cleaning(item))
@@ -136,9 +136,28 @@ def createNgram(word, gram):
         ret_word.append(''.join(t))
     return ret_word
 
+def remove_stopword(keywords):
+    with open("./Dataset/stop_word.txt", "r" , encoding='utf-8') as file:
+        stop_words = file.readline()
+        stop_words = stop_words.split(' ')
+        stop_words[0] = stop_words[0][1:]
+        for k in keywords:
+            if k in stop_words:
+                keywords.remove(k)
+        return keywords
 
-# library = []
-# library.append("ฉันอยากไปที่  นั่นจังเลย")
+def remove_strangeword(keywords):
+    with open("./Dataset/thaiword.txt", "r", encoding='utf-8') as file:
+        thai_words = file.readlines()
+        for idx in range(0, len(thai_words)):
+            thai_words[idx] = word_cleaning(thai_words[idx])
+        for k in keywords:
+            if k not in thai_words:
+                keywords.remove(k)
+        return keywords
+
+
+# remove_strangeword(123)
 # library.append("ฉันอยู่ที่นี่มี ความสุขจัง")
 # library.append("ฉันอยาก ไปอีก จัง")
 # key = create_keyword_thaionly(library)
