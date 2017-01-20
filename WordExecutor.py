@@ -24,67 +24,6 @@ def create_ngram_from_list_bynltk(word_arr, gram):
             keywords.append(''.join(t))
     return list(set(keywords))
 
-
-"""
-word_arr: list of words from file.
-"""
-def create_keyword_unigram(word_arr):
-    keywords = []
-    exist = False
-    for item in word_arr:
-        segmented_word = segment(word_cleaning(item))
-        for sw in segmented_word:
-            for existedWord in keywords:
-                if sw == existedWord:
-                    exist = True
-                    break
-            if not exist:
-                keywords.append(sw)
-            exist = False
-    return keywords
-
-
-"""
-word_arr: list of words from file.
-"""
-def create_keyword_bigram(word_arr):
-    bigram = []
-    exist = False
-    for item in word_arr:
-        segmented_word = segment(word_cleaning(item))
-        for idx in range(0, len(segmented_word)):
-            if idx < (len(segmented_word) - 1):
-                bi_str = segmented_word[idx] + segmented_word[idx + 1]
-                for existedWord in bigram:
-                    if bi_str == existedWord:
-                        exist = True
-                        break
-                if not exist:
-                    bigram.append(bi_str)
-                exist = False
-    return bigram
-
-"""
-word_arr: list of words from file.
-"""
-def create_keyword_trigram(word_arr):
-    trigram = []
-    exist = False
-    for item in word_arr:
-        segmented_word = segment(word_cleaning(item))
-        for idx in range(0, len(segmented_word)):
-            if idx < (len(segmented_word) - 2):
-                bi_str = segmented_word[idx] + segmented_word[idx + 1] + segmented_word[idx + 2]
-                for existedWord in trigram:
-                    if bi_str == existedWord:
-                        exist = True
-                        break
-                if not exist:
-                    trigram.append(bi_str)
-                exist = False
-    return trigram
-
-
 """
 word:       sentence you want to count frequency
 keyword:    array of keyword
@@ -102,11 +41,6 @@ def frequency_occur_in_keyword(word, keyword, maxGram):
             segmented_word = createNgram(word, t)
         else:
             segmented_word = segmented_word + createNgram(word, t)
-    # for sw in segmented_word:
-    #     for kw in keyword:
-    #         if sw == kw:
-    #             freq_table[kw] = freq_table[kw] + 1
-
     for kw in keyword:
         freq_table[kw] = segmented_word.count(kw)
     return freq_table
@@ -122,21 +56,12 @@ type:   1 - unigram
 def createNgram(word, gram):
     segmented_word = segment(word_cleaning(word))
     ret_word = []
-    # for idx in range(0, len(segmented_word)):
-    #     w_str = ""
-    #     if idx < (len(segmented_word) - (gram - 1)):
-    #         for i in range(0, gram):
-    #             if i == 0:
-    #                 w_str = segmented_word[idx + i]
-    #             else:
-    #                 w_str = w_str + segmented_word[idx + i]
-    #         ret_word.append(w_str)
     grams = ngrams(segmented_word, gram)
     for t in grams:
         ret_word.append(''.join(t))
     return ret_word
 
-def remove_stopword(keywords):
+def remove_stop_word(keywords):
     with open("./Dataset/stop_word.txt", "r" , encoding='utf-8') as file:
         stop_words = file.readline()
         stop_words = stop_words.split(' ')
@@ -146,15 +71,18 @@ def remove_stopword(keywords):
                 keywords.remove(k)
         return keywords
 
-def remove_strangeword(keywords):
-    with open("./Dataset/thaiword.txt", "r", encoding='utf-8') as file:
-        thai_words = file.readlines()
-        for idx in range(0, len(thai_words)):
-            thai_words[idx] = word_cleaning(thai_words[idx])
-        for k in keywords:
-            if k not in thai_words:
-                keywords.remove(k)
-        return keywords
+def remove_strange_word_and_normalize(keywords):
+    # with open("./Dataset/thaiword.txt", "r", encoding='utf-8') as file:
+    #     thai_words = file.readlines()
+    #     for idx in range(0, len(thai_words)):
+    #         thai_words[idx] = word_cleaning(thai_words[idx])
+    #     for k in keywords:
+    #         if k not in thai_words:
+    #             keywords.remove(k)
+    #     return keywords
+    if '' in keywords:
+        keywords.remove('')
+    return list(set(keywords))
 
 
 # remove_strangeword(123)
