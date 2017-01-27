@@ -14,20 +14,20 @@ u = unigram
 ub = unigram + bigram
 ubt = unigram + bigram + trigram
 
-u = WordExecutor.remove_stop_word(a)
-u = WordExecutor.remove_strange_word_and_normalize(a)
+u = WordExecutor.remove_stop_word(u)
+u = WordExecutor.remove_strange_word_and_normalize(u)
 
-ub = WordExecutor.remove_stop_word(b)
-ub = WordExecutor.remove_strange_word_and_normalize(b)
+ub = WordExecutor.remove_stop_word(ub)
+ub = WordExecutor.remove_strange_word_and_normalize(ub)
 
 ubt = WordExecutor.remove_stop_word(ubt)
 ubt = WordExecutor.remove_strange_word_and_normalize(ubt)
 
 # print(ubt)
-# freq = []
-# for li in library:
-#     li[0] = WordExecutor.frequency_occur_in_keyword(li[0], ubt, 3)
-#     freq.append(li)
+freq = []
+for li in library:
+    li[0] = WordExecutor.frequency_occur_in_keyword(li[0], ub, 2)
+    freq.append(li)
 
 # print(CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
-# CSVExecutor.write_csv('test4.csv', CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
+CSVExecutor.write_csv('output/output_5EMO_2.csv', CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
