@@ -29,5 +29,8 @@ for li in library:
     li[0] = WordExecutor.frequency_occur_in_keyword(li[0], ub, 2)
     freq.append(li)
 
+keywords = []
+keywords.append(u)
 # print(CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
-CSVExecutor.write_csv('output/output_5EMO_2.csv', CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
+# CSVExecutor.write_csv('output/output_5EMO_test.csv', CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
+CSVExecutor.write_csv('output/keyword.csv', keywords)

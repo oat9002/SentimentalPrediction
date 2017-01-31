@@ -1,5 +1,4 @@
 import os
-import weka.core.jvm as jvm
 from weka.core.converters import Loader
 from weka.classifiers import Evaluation
 from weka.classifiers import Classifier
@@ -21,18 +20,28 @@ def load_dataset(path):
     return train_data
 
 """
-Classify with naive bayes algrorithm
+Create classifier by naive bayes algrorithm
 
 data: data you want to train
 """
 def naivebay_classifier(data):
     classifier = Classifier("weka.classifiers.bayes.NaiveBayes")
-    # classifier.build_classifer(data)
-    evaluation = Evaluation(data) 
-    evaluation.crossvalidate_model(classifier, data, 10, Random(42)) 
+    evaluation = Evaluation(data)
+    evaluation.crossvalidate_model(classifier, data, 10, Random(42))
     print(evaluation.summary())
     print(evaluation.confusion_matrix)
     return classifier
+
+
+"""
+Classify
+
+data: data you want to classify
+classifier: your model
+"""
+def predict_for_result(classifier, data):
+    classifier.build_classifier(data)
+    return Classifier.classify_instance(data)
 
 
 """
@@ -52,11 +61,3 @@ path: path where you want to read
 """
 def read_model(path):
     return Classifier(jobject=serialization.read(path))
-
-jvm.start()
-train_data = load_dataset("./output/output_5EMO_2.csv")
-naivebay_classifier(train_data)
-jvm.stop()
-
-
-
