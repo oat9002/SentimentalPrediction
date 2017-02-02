@@ -6,7 +6,7 @@ import WordExecutor
 from sklearn.feature_extraction import DictVectorizer
 
 
-library = CSVExecutor.read_csv('./Dataset/ktest.csv')
+library = CSVExecutor.read_csv('./Dataset/4EMO.csv')
 words = []
 for li in library:
     words.append(li[0])
@@ -18,7 +18,7 @@ u = unigram
 ub = unigram + bigram
 ubt = unigram + bigram + trigram
 
-u = WordExecutor.remove_stop_word(u)
+# u = WordExecutor.remove_stop_word(u)
 u = WordExecutor.remove_strange_word_and_normalize(u)
 
 ub = WordExecutor.remove_stop_word(ub)
@@ -33,22 +33,17 @@ for li in library:
     li[0] = WordExecutor.frequency_occur_in_keyword(li[0], u, 1)
     freq.append(li)
 
-vec = DictVectorizer()
-vec.fit_transform(freq).toarray()
-# with open("./Dataset/stop_word.txt", "r" , encoding='utf-8') as file:
-#     stop_words = file.readline()
-#     stop_words = stop_words.split(' ')
-#     stop_words[0] = stop_words[0][1:]
-#
-#     count_vectorizer = CountVectorizer(ngram_range=(1,1), stop_words=stop_words)
-#     print(count_vectorizer.build_analyzer()("ฉันอยากไปโรงเรียนจุง"))
-    # counts = count_vectorizer.fit_transform(words)
-    # print(counts.get
+dataset = WordExecutor.to_scikitlearn_dataset(data=freq, attribute=sorted(u))
+target = WordExecutor.get_labeled_class(data=freq)
+clf = MultinomialNB()
+clf.fit(dataset, target)
 
-# X = np.random.randint(5, size=(6, 100))
-# y = np.array([1, 2, 3, 4, 5, 6])
-
-# clf = MultinomialNB()
-# clf.fit(X, y)
-
-# print(clf.predict(X[2:3]))
+test = CSVExecutor.read_csv('./Dataset/ktest.csv')
+freq = []
+for li in test:
+    li[0] = WordExecutor.frequency_occur_in_keyword(li[0], u, 1)
+    freq.append(li)
+testset = WordExecutor.to_scikitlearn_dataset(data=freq, attribute=sorted(u))
+testtarget = WordExecutor.get_labeled_class(data=freq)
+predicted = clf.predict(testset)
+print(np.mean(predicted == testtarget))

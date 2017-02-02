@@ -72,18 +72,25 @@ def remove_stop_word(keywords):
         return keywords
 
 def remove_strange_word_and_normalize(keywords):
-    # with open("./Dataset/thaiword.txt", "r", encoding='utf-8') as file:
-    #     thai_words = file.readlines()
-    #     for idx in range(0, len(thai_words)):
-    #         thai_words[idx] = word_cleaning(thai_words[idx])
-    #     for k in keywords:
-    #         if k not in thai_words:
-    #             keywords.remove(k)
-    #     return keywords
     if '' in keywords:
         keywords.remove('')
     return list(set(keywords))
 
+def to_scikitlearn_dataset(data, attribute):
+    formatted = []
+    for item in data:
+        freq_t = []
+        for h in attribute:
+            if h != 'class':
+                freq_t.append(item[0].get(h))
+        formatted.append(freq_t)
+    return formatted
+
+def get_labeled_class(data):
+    attrs = []
+    for item in data:
+        attrs.append(item[1])
+    return sorted(attrs)
 
 # remove_strangeword(123)
 # library.append("ฉันอยู่ที่นี่มี ความสุขจัง")
