@@ -2,7 +2,6 @@ import numpy as np
 from sklearn.naive_bayes import MultinomialNB
 import CSVExecutor
 import WordExecutor
-import model
 
 
 library = CSVExecutor.read_csv('./Dataset/4EMO.csv')
@@ -42,7 +41,6 @@ freq = []
 for li in test:
     li[0] = WordExecutor.frequency_occur_in_keyword(li[0], u, 1)
     freq.append(li)
-
 testset = WordExecutor.to_scikitlearn_dataset(data=freq, attribute=sorted(u))
 testtarget = WordExecutor.get_labeled_class(data=freq)
 predicted = clf.predict(testset)
