@@ -25,18 +25,17 @@ def check_emo(data):
     for emo in emo_list:
         if emo == '':
             count += 1
-        else
+        else:
             predicted_emo_list.append(emo)
     if count == 8:
         rand_num = random.randint(1, 8)
         data[rand_num] = get_emo(number=rand_num)
-        return data
-    elif count == 7:
-        return data
-    else:
+    elif count < 7:
         rand_num = random.randint(0, len(predicted_emo_list) - 1)
         emo = predicted_emo_list[rand_num]
-        data[]
+        data[1:] = ['']*8
+        data[revert_emo_to_number(emo)] = emo
+    return data
 
 def get_emo(number):
     if number == 1:
@@ -125,7 +124,7 @@ for wd in words:
     else:
         temp.append('')
     if check_emo_in_word(disgust_list, wd[0]):
-        temp.append('disgust_list')
+        temp.append('disgust')
     else:
         temp.append('')
     if check_emo_in_word(surprise_list, wd[0]):
@@ -140,6 +139,6 @@ for wd in words:
         temp.append('acceptance')
     else:
         temp.append('')
-    list.append(temp)
+    list.append(check_emo(temp))
 CSVExecutor.write_csv('output/labeled2.csv', list)
 # print(joy_list, sadness_list, fear_list, angry_list, disgust_list, surprise_list, anticipation_list, acceptance_list)
