@@ -2,7 +2,9 @@ import numpy as np
 from sklearn.naive_bayes import MultinomialNB
 import CSVExecutor
 import WordExecutor
-
+import model
+from sklearn import metrics
+from sklearn.model_selection import cross_val_predict
 
 library = CSVExecutor.read_csv('./Dataset/4EMO.csv')
 words = []
@@ -33,8 +35,10 @@ for li in library:
 
 dataset = WordExecutor.to_scikitlearn_dataset(data=freq, attribute=sorted(u))
 target = WordExecutor.get_labeled_class(data=freq)
-clf = MultinomialNB()
-clf.fit(dataset, target)
+# clf = MultinomialNB()
+# clf.fit(dataset, target)
+clf = model.read_model_scikitlearn('./output/model.pkl')
+# model.save_model_scikitlearn(classifier=clf, path='output/model.pkl')
 
 test = CSVExecutor.read_csv('./Dataset/ktest.csv')
 freq = []
@@ -43,5 +47,7 @@ for li in test:
     freq.append(li)
 testset = WordExecutor.to_scikitlearn_dataset(data=freq, attribute=sorted(u))
 testtarget = WordExecutor.get_labeled_class(data=freq)
-predicted = clf.predict(testset)
-print(np.mean(predicted == testtarget))
+predicted = cross_val_predict(clf, dataset, target, cv=10)
+
+print(metrics.accuracy_score(target, predicted))
+# print(metrics.classification_report(twenty_test.target, predicted, target_names=twenty_test.target_names))

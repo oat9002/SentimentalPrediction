@@ -71,6 +71,9 @@ def multinominal_naive_bayes_classifier(dataset, target):
     clf.fit(dataset, target)
     return clf
 
+def predict_for_result(classifier, test_set):
+    return classifier.predict(test_set)
+
 def save_model_scikitlearn(classifier, path):
     joblib.dump(classifier, path)
 
