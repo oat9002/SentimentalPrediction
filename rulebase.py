@@ -1,21 +1,29 @@
 import CSVExecutor
 import WordExecutor
 import random
+import emoji
+
 
 def check_emo_in_word(emo_list, word):
     u = WordExecutor.createNgram(word=word, gram=1)
     ub = WordExecutor.createNgram(word=word, gram=2)
     ubt = WordExecutor.createNgram(word=word, gram=3)
     for item in emo_list:
-        for w in u:
-            if item == w:
-                return True
-        for w in ub:
-            if item == w:
-                return True
-        for w in ubt:
-            if item == w:
-                return True
+        if item == emoji.UNICODE_EMOJI:
+            for w in word:
+                if w == item:
+                    return True
+    for item in emo_list:
+        if item != emoji.UNICODE_EMOJI:
+            for w in u:
+                if item == w:
+                    return True
+            for w in ub:
+                if item == w:
+                    return True
+            for w in ubt:
+                if item == w:
+                    return True
     return False
 
 def check_emo(data):
