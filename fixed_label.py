@@ -73,23 +73,24 @@ for idx, inst in enumerate(data):
         if inst[9] != '':
             emo_default = ''
             if int(inst[9]) == 1:
-                for stm in inst[1:8]:
+                for stm in inst[1:9]:
                     if stm != '':
                         emo_default = stm
                         break
-            elif int(inst[9] == 4):
+            elif int(inst[9]) == 4:
                 for stm in predict[1:]:
                     if stm != '':
                         emo_default = stm
                         break
             else:
                 emo_default = rulebase.get_emo(int(inst[10]))
-            if emo_default != emo_predict:
-                data[idx][9] = 0
-                data[idx][10] = rulebase.revert_emo_to_number(emo_default)
-            else:
-                data[idx][9] = 1
-                data[idx][10] = rulebase.revert_emo_to_number(emo_default)
-            data[idx][1:8] = predict[1:]
+            if emo_default != '':
+                if emo_default != emo_predict:
+                    data[idx][9] = 0
+                    data[idx][10] = rulebase.revert_emo_to_number(emo_default)
+                else:
+                    data[idx][9] = 1
+                    data[idx][10] = rulebase.revert_emo_to_number(emo_default)
+            data[idx][1:9] = predict[1:]
 
 CSVExecutor.write_csv(path='output/label_fix.csv', data=data)
