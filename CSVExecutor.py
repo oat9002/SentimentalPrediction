@@ -23,6 +23,17 @@ def read_csv(path):
             data.append(row)
     return data
 
+
+def read_csv_emo(path,emo):
+    data = []
+    with open(path, newline='', encoding='utf-8') as csvfile:
+        file = csv.reader(csvfile, delimiter=',')
+        for row in file:
+            if  row[1] == emo :
+                data.append(row)
+    return data
+
+
 def read_csv_without_first_strange_char(path):
     data = []
     with open(path, newline='', encoding='utf-8') as csvfile:
