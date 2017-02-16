@@ -5,6 +5,7 @@ keyword_list = CSVExecutor.read_csv_without_first_strange_char("Dataset/KEYWORD_
 emoji_list = CSVExecutor.read_csv_without_first_strange_char("Dataset/EMOJI_LIST.csv")
 icon_list = CSVExecutor.read_csv_without_first_strange_char("Dataset/ICON_LIST.csv")
 
+
 for idx in range(0, len(keyword_list)):
     while True:
         if '' in keyword_list[idx]:
@@ -12,23 +13,15 @@ for idx in range(0, len(keyword_list)):
         else:
             break
 
-# print(keyword_list)
 joy_list = keyword_list[0]
-#joy_list.remove('joy')
 sadness_list = keyword_list[1]
-#sadness_list.remove('sadness')
 fear_list = keyword_list[2]
-#fear_list.remove("fear")
 angry_list = keyword_list[3]
-#angry_list.remove('angry')
 disgust_list = keyword_list[4]
-#disgust_list.remove('disgust')
 surprise_list = keyword_list[5]
-#surprise_list.remove('surprise')
 anticipation_list = keyword_list[6]
-#anticipation_list.remove('anticipation')
 acceptance_list = keyword_list[7]
-#acceptance_list.remove('acceptance')
+# acceptance_list.remove('acceptance')
 
 
 joy_list_emo = emoji_list[0]+icon_list[0]
@@ -44,7 +37,7 @@ print(joy_list)
 print(joy_list_emo)
 
 
-words = CSVExecutor.read_csv('Dataset/test_joy.csv')
+words = CSVExecutor.read_csv('Dataset/Ktest/test_joy.csv')
 list = []
 for wd in words:
     temp = []
@@ -62,7 +55,7 @@ for wd in words:
     else:
         temp.append('')
     if rulebase.check_emo_in_word(angry_list,anticipation_list_emo, wd[0]):
-        temp.append('angry')
+        temp.append('anger')
     else:
         temp.append('')
     if rulebase.check_emo_in_word(disgust_list,disgust_list_emo, wd[0]):
@@ -82,5 +75,5 @@ for wd in words:
     else:
         temp.append('')
     list.append(rulebase.check_emo(temp))
-# CSVExecutor.write_csv('output/labeled_test_joy.csv', list)
+CSVExecutor.write_csv('output/labeled_test_joy.csv', list)
 # print(joy_list, sadness_list, fear_list, angry_list, disgust_list, surprise_list, anticipation_list, acceptance_list)

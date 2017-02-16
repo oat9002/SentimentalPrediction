@@ -1,7 +1,7 @@
 import CSVExecutor
 import WordExecutor
 import random
-
+import emoji
 
 
 def check_emo_in_word(keyword_list, emoji_list, word):
@@ -26,6 +26,11 @@ def check_emo_in_word(keyword_list, emoji_list, word):
 
 
 def check_emoji_in_word(emoji_list, word):
+    word = word.split(' ')
+    for idx, w in enumerate(word):
+        if 'http' in w:
+            del word[idx]
+    word = ' '.join(word)
     for item in emoji_list:
         if item in word:
             return True
@@ -59,7 +64,7 @@ def get_emo(number):
     elif number == 3:
         return 'fear'
     elif number == 4:
-        return 'angry'
+        return 'anger'
     elif number == 5:
         return 'disgust'
     elif number == 6:
@@ -78,7 +83,7 @@ def revert_emo_to_number(emo):
         return 2
     elif emo == 'fear':
         return 3
-    elif emo == 'angry':
+    elif emo == 'anger' or emo == 'angry':
         return 4
     elif emo == 'disgust':
         return 5
