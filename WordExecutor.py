@@ -7,8 +7,24 @@ from nltk.util import ngrams
 word: any words you want to clean
 """
 def word_cleaning(word):
-    temp = re.sub(r'[^ก-ูเ-์]', '', word)
-    return temp
+    only_thai = re.sub(r'[^ก-ูเ-์]', '', word)
+    except_word = ['กก']
+    for idx, item in enumerate(only_thai):
+        ch_t = item
+        idx_t = idx
+        while(idx < len(only_thai) - 1):
+            if idx_t < len(only_thai) - 1:
+                if ch_t == only_thai[idx_t + 1]:
+                    idx_t += 1
+                else:
+                    omit= False
+                    for ex in except_word:
+                        if ex == only_thai[idx: idx_t + 1]:
+                            omit = True
+                            break
+                    if not omit:
+                        del only_thai[idx + 1: idx_t + 1]
+    return only_thai
 
 """
 word_array: list of words
@@ -92,6 +108,8 @@ def get_labeled_class(data):
         attrs.append(item[1])
     return sorted(attrs)
 
+word = "กกกกกกกกกกkjklsdjfasdf"
+print(word_cleaning(word))
 # remove_strangeword(123)
 # library.append("ฉันอยู่ที่นี่มี ความสุขจัง")
 # library.append("ฉันอยาก ไปอีก จัง")
