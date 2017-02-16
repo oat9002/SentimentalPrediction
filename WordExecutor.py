@@ -9,21 +9,32 @@ word: any words you want to clean
 def word_cleaning(word):
     only_thai = re.sub(r'[^ก-ูเ-์]', '', word)
     except_word = ['กก']
-    for idx, item in enumerate(only_thai):
-        ch_t = item
-        idx_t = idx
-        while(idx < len(only_thai) - 1):
-            if idx_t < len(only_thai) - 1:
-                if ch_t == only_thai[idx_t + 1]:
+    idx = 0
+    while idx < len(only_thai):
+        ch_t = only_thai[idx]
+        idx_t = idx + 1
+        duplicate = False
+        while True:
+            if idx_t < len(only_thai):
+                if ch_t == only_thai[idx_t]:
                     idx_t += 1
+                    duplicate = True
                 else:
-                    omit= False
-                    for ex in except_word:
-                        if ex == only_thai[idx: idx_t + 1]:
-                            omit = True
-                            break
-                    if not omit:
-                        del only_thai[idx + 1: idx_t + 1]
+                    break
+            else:
+                break
+        if duplicate:
+            omit = False
+            for ex in except_word:
+                if ex == only_thai[idx: idx_t]:
+                    omit = True
+                    break
+            if not omit:
+                if idx_t != len(only_thai) - 1:
+                    only_thai = only_thai[:idx + 1] + only_thai[idx_t:]
+                else:
+                    only_thai = only_thai[:idx + 1]
+        idx += 1
     return only_thai
 
 """
@@ -108,8 +119,8 @@ def get_labeled_class(data):
         attrs.append(item[1])
     return sorted(attrs)
 
-word = "กกกกกกกกกกkjklsdjfasdf"
-print(word_cleaning(word))
+# word = "กกกกกใข่"
+# print(word_cleaning(word))
 # remove_strangeword(123)
 # library.append("ฉันอยู่ที่นี่มี ความสุขจัง")
 # library.append("ฉันอยาก ไปอีก จัง")
