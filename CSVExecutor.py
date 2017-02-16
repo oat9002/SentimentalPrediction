@@ -34,6 +34,22 @@ def read_csv_emo(path,emo):
     return data
 
 
+# def read_csv_emoji(path):
+#     data = []
+#     with open(path, newline='', encoding='utf-8') as csvfile:
+#         file = csv.reader(csvfile, delimiter=',')
+#         for row in file:
+#             first = True
+#             emoji = []
+#             for item in row:
+#                 if first:
+#                     emoji.append(item[2:])
+#                     first = False
+#                 else:
+#                     emoji.append(item[1:])
+#             data.append(emoji)
+#     return data
+
 def read_csv_without_first_strange_char(path):
     data = []
     with open(path, newline='', encoding='utf-8') as csvfile:

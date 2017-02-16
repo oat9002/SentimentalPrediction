@@ -1,7 +1,9 @@
 import CSVExecutor
 import rulebase
 
-keyword_list = CSVExecutor.read_csv_without_first_strange_char("Dataset/EMO_LIST.csv")
+keyword_list = CSVExecutor.read_csv_without_first_strange_char("Dataset/KEYWORD_LIST.csv")
+emoji_list = CSVExecutor.read_csv("Dataset/EMOJI_LIST.csv")
+icon_list = CSVExecutor.read_csv("Dataset/ICON_LIST.csv")
 for idx in range(0, len(keyword_list)):
     while True:
         if '' in keyword_list[idx]:
@@ -10,57 +12,59 @@ for idx in range(0, len(keyword_list)):
             break
 # print(keyword_list)
 joy_list = keyword_list[0]
-joy_list.remove('joy')
 sadness_list = keyword_list[1]
-sadness_list.remove('sadness')
 fear_list = keyword_list[2]
-fear_list.remove("fear")
 angry_list = keyword_list[3]
-angry_list.remove('angry')
 disgust_list = keyword_list[4]
-disgust_list.remove('disgust')
 surprise_list = keyword_list[5]
-surprise_list.remove('surprise')
 anticipation_list = keyword_list[6]
-anticipation_list.remove('anticipation')
 acceptance_list = keyword_list[7]
-acceptance_list.remove('acceptance')
 
 
-data = CSVExecutor.read_csv(path='Dataset/2d_label/test.csv')
+joy_list_emo = emoji_list[0]+icon_list[0]
+sadness_list_emo = emoji_list[1]+icon_list[1]
+fear_list_emo = emoji_list[2]+icon_list[2]
+angry_list_emo = emoji_list[3]+icon_list[3]
+disgust_list_emo = emoji_list[4]+icon_list[4]
+surprise_list_emo = emoji_list[5]+icon_list[5]
+anticipation_list_emo = emoji_list[6]+icon_list[6]
+acceptance_list_emo = emoji_list[7]+icon_list[7]
+
+
+data = CSVExecutor.read_csv(path='Dataset/train_NSC.csv')
 for idx, inst in enumerate(data):
     if len(inst) != 1:
         temp = []
         temp.append(inst[0])
-        if rulebase.check_emo_in_word(joy_list, inst[0]):
+        if rulebase.check_emo_in_word(joy_list, joy_list_emo, inst[0]):
             temp.append('joy')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(sadness_list, inst[0]):
+        if rulebase.check_emo_in_word(sadness_list, sadness_list_emo, inst[0]):
             temp.append('sadness')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(fear_list, inst[0]):
+        if rulebase.check_emo_in_word(fear_list, fear_list_emo, inst[0]):
             temp.append('fear')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(angry_list, inst[0]):
-            temp.append('angry')
+        if rulebase.check_emo_in_word(angry_list, anticipation_list_emo, inst[0]):
+            temp.append('anger')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(disgust_list, inst[0]):
+        if rulebase.check_emo_in_word(disgust_list, disgust_list_emo, inst[0]):
             temp.append('disgust')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(surprise_list, inst[0]):
+        if rulebase.check_emo_in_word(surprise_list, surprise_list_emo, inst[0]):
             temp.append('surprise')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(anticipation_list, inst[0]):
+        if rulebase.check_emo_in_word(anticipation_list, anticipation_list_emo, inst[0]):
             temp.append('anticipation')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(acceptance_list, inst[0]):
+        if rulebase.check_emo_in_word(acceptance_list, acceptance_list_emo, inst[0]):
             temp.append('acceptance')
         else:
             temp.append('')
