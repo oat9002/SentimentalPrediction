@@ -65,10 +65,7 @@ def frequency_occur_in_keyword(word, keyword, maxGram):
     for w in keyword:
         freq_table[w] = 0
     for t in range(1, maxGram + 1):
-        if t == 0:
-            segmented_word = createNgram(word, t)
-        else:
-            segmented_word = segmented_word + createNgram(word, t)
+        segmented_word = segmented_word + createNgram(word, t)
     for kw in keyword:
         freq_table[kw] = segmented_word.count(kw)
     return freq_table
