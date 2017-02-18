@@ -9,6 +9,8 @@ word: any words you want to clean
 def word_cleaning(word):
     only_thai = re.sub(r'[^ก-ูเ-์]', '', word)
     only_thai = re.sub(r'ๆ', '', only_thai)
+    only_thai = re.sub(r'ๅ', '', only_thai)
+    only_thai = re.sub(r'ฯ', '', only_thai)
     except_word = ['กก']
     idx = 0
     while idx < len(only_thai):
