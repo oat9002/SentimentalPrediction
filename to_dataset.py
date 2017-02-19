@@ -44,8 +44,8 @@ freq = []
 
 def caculate_freq_for_thread(start, end, dataset):
     for idx in range(start, end):
-        dataset[idx][0] = WordExecutor.frequency_occur_in_keyword(dataset[idx][0], u, 1)
-        freq.append(dataset[idx])
+        dataset[idx][0] = WordExecutor.frequency_occur_in_keyword(dataset[idx][0], u)
+        freq.append(dataset[idx][0])
 
 for i in range(0, len(total_thread)):
     if i != 0:
