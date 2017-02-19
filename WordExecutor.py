@@ -67,15 +67,19 @@ maxGram:    max gram
 """
 
 
-def frequency_occur_in_keyword(word, keyword):
+def frequency_occur_in_keyword(word, keyword, maxGram):
     freq_table = {}
+    segmented_word = []
     for w in keyword:
         freq_table[w] = 0
+    for t in range(1, maxGram + 1): 
+        segmented_word = segmented_word + createNgram(word, t) 
     for kw in keyword:
         if kw not in emoji_list:
-            freq_table[kw] = word_cleaning(word).count(kw)
+            freq_table[kw] = segmented_word.count(kw)
         else:
             freq_table[kw] = word.count(kw)
+    del segmented_word
     return freq_table
 
 """

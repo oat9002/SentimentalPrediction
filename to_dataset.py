@@ -1,7 +1,11 @@
 import CSVExecutor
 import WordExecutor
 import threading
+from multiprocessing import Process
 import gc
+import time
+
+now = time.time()
 
 def divided_thread_len_end(size, total_thread):
     thread_len_end = []
@@ -25,9 +29,9 @@ unigram = WordExecutor.create_ngram_from_list_bynltk(words, 1)
 bigram = WordExecutor.create_ngram_from_list_bynltk(words, 2)
 trigram = WordExecutor.create_ngram_from_list_bynltk(words, 3)
 
-u = unigram
-ub = unigram + bigram
-ubt = unigram + bigram + trigram
+u = WordExecutor.add_emoji_keyword(unigram)
+ub = WordExecutor.add_emoji_keyword(unigram + bigram)
+ubt = WordExecutor.add_emoji_keyword(unigram + bigram + trigram)
 
 # u = WordExecutor.remove_stop_word(u)
 u = WordExecutor.remove_strange_word_and_normalize(u)
@@ -38,48 +42,48 @@ ub = WordExecutor.remove_strange_word_and_normalize(ub)
 ubt = WordExecutor.remove_stop_word(ubt)
 ubt = WordExecutor.remove_strange_word_and_normalize(ubt)
 
-total_thread = divided_thread_len_end(size=len(library), total_thread=8)
+total_thread = divided_thread_len_end(size=len(library), total_thread=64)
 threads = []
 freq = []
-
 def caculate_freq_for_thread(start, end, dataset):
     for idx in range(start, end):
-        dataset[idx][0] = WordExecutor.frequency_occur_in_keyword(dataset[idx][0], u)
+        dataset[idx][0] = WordExecutor.frequency_occur_in_keyword(dataset[idx][0], ub, 2)
         freq.append(dataset[idx][0])
+
+def start_thread(thread_each_lap, threads):
+    idx_start = 0
+    idx_join = 0
+    while idx_start < len(threads) or idx_join < len(threads):
+        for i in range(0, thread_each_lap):
+            if idx_start < len(threads):
+                threads[idx_start].start()
+                idx_start += 1
+            else:
+                break
+        for i in range(0, thread_each_lap):
+            if idx_join < len(threads):
+                threads[idx_join].join()
+                print('Finish thread: ' + str(idx_join + 1))
+                idx_join += 1 
+            else:
+                break
+
 
 for i in range(0, len(total_thread)):
     if i != 0:
-        t = threading.Thread(target=caculate_freq_for_thread, args=(total_thread[i - 1], total_thread[i], library,))
+        t = Process(target=caculate_freq_for_thread, args=(total_thread[i - 1], total_thread[i], library,))
     else:
-        t = threading.Thread(target=caculate_freq_for_thread, args=(0, total_thread[i], library,))
+        t = Process(target=caculate_freq_for_thread, args=(0, total_thread[i], library,))
     threads.append(t)
 
-threads[0].start()
-threads[1].start()
-threads[0].join()
-threads[1].join()
-gc.collect()
-threads[2].start()
-threads[3].start()
-threads[2].join()
-threads[3].join()
-gc.collect()
-threads[4].start()
-threads[5].start()
-threads[4].join()
-threads[5].join()
-gc.collect()
-threads[6].start()
-threads[7].start()
-threads[6].join()
-threads[7].join()
-
+start_thread(thread_each_lap=4, threads=threads)
+print(time.time() - now)
 # freq = []
 # for li in library:
-#     li[0] = WordExecutor.frequency_occur_in_keyword(li[0], ub, 2)
+#     li[0] = WordExecutor.frequency_occur_in_keyword(li[0], u, 1)
 #     freq.append(li)
 # keywords = []
 # keywords.append(u)
 # print(CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
-CSVExecutor.write_csv('output/test_thread.csv', CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
+# CSVExecutor.write_csv('output/test_thread.csv', CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
 # CSVExecutor.write_csv('output/keyword8.csv', keywords)
