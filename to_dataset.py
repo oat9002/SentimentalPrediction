@@ -17,7 +17,7 @@ def divided_thread_len_end(size, total_thread):
         temp += divide
     return thread_len_end
 
-library = CSVExecutor.read_csv('./Dataset/train_NSC.csv')
+library = CSVExecutor.read_csv('./Dataset/8EMO_label.csv')
 words = []
 for li in library:
     words.append(li[0])
@@ -29,7 +29,7 @@ u = unigram
 ub = unigram + bigram
 ubt = unigram + bigram + trigram
 
-u = WordExecutor.remove_stop_word(u)
+# u = WordExecutor.remove_stop_word(u)
 u = WordExecutor.remove_strange_word_and_normalize(u)
 
 ub = WordExecutor.remove_stop_word(ub)
@@ -39,15 +39,13 @@ ubt = WordExecutor.remove_stop_word(ubt)
 ubt = WordExecutor.remove_strange_word_and_normalize(ubt)
 
 total_thread = divided_thread_len_end(size=len(library), total_thread=8)
-print(total_thread)
-print(len(ub))
 threads = []
 freq = []
 
 def caculate_freq_for_thread(start, end, dataset):
     for idx in range(start, end):
-        dataset[idx][0] = WordExecutor.frequency_occur_in_keyword(dataset[idx][0], ub, 2)
-        freq.append(dataset[idx][0])
+        dataset[idx][0] = WordExecutor.frequency_occur_in_keyword(dataset[idx][0], u, 1)
+        freq.append(dataset[idx])
 
 for i in range(0, len(total_thread)):
     if i != 0:
@@ -83,5 +81,5 @@ threads[7].join()
 # keywords = []
 # keywords.append(u)
 # print(CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
-# CSVExecutor.write_csv('output/output_8EMO_B.csv', CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
+CSVExecutor.write_csv('output/test_thread.csv', CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
 # CSVExecutor.write_csv('output/keyword8.csv', keywords)
