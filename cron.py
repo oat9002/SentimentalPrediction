@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 from pymongo import MongoClient
-from datetime import datetime
+from datetime import datetime, timedelta
 # import model
 import rulebase 
 import CSVExecutor
 import WordExecutor
 import requests
+import schedule
+import time
 
 client = MongoClient('mongodb://10.0.1.3:27017/')
 db = client['SocialData']
@@ -73,8 +75,9 @@ def summarize(data):
     return result
     
 
-def predict_every_5_min():
-    start = datetime.today().replace(hour=0,minute=0,second=0, microsecond=0)
+def predict_cron():
+    # start = datetime.today().replace(hour=0,minute=0,second=0, microsecond=0)
+    start = (datetime.now() - timedelta(days = 1)).replace(hour=0,minute=0,second=0, microsecond=0)
     end = datetime.today().replace(hour=23,minute=59,second=59, microsecond=999999)
     tweets = tweet_collection.find({"created_at": {"$gte": start, "$lte": end}})
     pred_list = []
@@ -129,8 +132,12 @@ def predict_every_5_min():
             if p == i[1]:
                 temp[p].append(i[0]) 
         place_with_pred.append(temp)
-    return summarize(place_with_pred)
+    predicted_collection.insert_one({'predicted': summarize(place_with_pred)}).inserted_id
 
+schedule.every(3).minutes.do(predict_cron)
+while True:
+    schedule.run_pending()
+    time.sleep(1)
     # testset = WordExecutor.to_scikitlearn_dataset(data=freq_test, attribute=sorted(u))
     # pred_list = clf.predict(testset)
     # print(pred_list)
