@@ -1,11 +1,9 @@
 import CSVExecutor
 import WordExecutor
 import threading
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Manager
 import gc
 import time
-
-now = time.time()
 
 def divided_thread_len_end(size, total_thread):
     thread_len_end = []
@@ -25,7 +23,7 @@ def divided_thread_len_end(size, total_thread):
 def caculate_freq_for_thread(start, end, dataset, freq, keyword, gram):
     for idx in range(start, end):
         dataset[idx][0] = WordExecutor.frequency_occur_in_keyword(dataset[idx][0], keyword, gram)
-        freq.put(dataset[idx][0])
+        freq.append(dataset[idx][0])
 
 def start_thread(thread_each_lap, threads):
     idx_start = 0
@@ -45,12 +43,9 @@ def start_thread(thread_each_lap, threads):
             else:
                 break
 
-
-
-
-
-if __name__ == '__main__':    
-    freq = Queue()
+if __name__ == '__main__':   
+    now = time.time() 
+    freq = Manager().list()
     library = CSVExecutor.read_csv('./Dataset/8EMO_label.csv')
     words = []
     for li in library:
@@ -72,7 +67,7 @@ if __name__ == '__main__':
     ubt = WordExecutor.remove_stop_word(ubt)
     ubt = WordExecutor.remove_strange_word_and_normalize(ubt)
 
-    total_thread = divided_thread_len_end(size=len(library), total_thread=16)
+    total_thread = divided_thread_len_end(size=len(library), total_thread=4)
     threads = []
     for i in range(0, len(total_thread)):
         if i != 0:
@@ -80,17 +75,18 @@ if __name__ == '__main__':
         else:
             t = Process(target=caculate_freq_for_thread, args=(0, total_thread[i], library, freq, u, 1))
         threads.append(t)
+    print('Here')
     start_thread(thread_each_lap=4, threads=threads)
-    print(freq.get())
+    print(len(freq))
     # CSVExecutor.write_csv('output/test_process.csv', CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
     print(time.time() - now)
 
-# freq = []
-# for li in library:
-#     li[0] = WordExecutor.frequency_occur_in_keyword(li[0], u, 1)
-#     freq.append(li)
-# keywords = []
-# keywords.append(u)
-# print(CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
-# CSVExecutor.write_csv('output/test_thread.csv', CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
-# CSVExecutor.write_csv('output/keyword8.csv', keywords)
+    # freq = []
+    # for li in library:
+    #     li[0] = WordExecutor.frequency_occur_in_keyword(li[0], u, 1)
+    #     freq.append(li)
+    # keywords = []
+    # keywords.append(u)
+    # print(CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
+    # CSVExecutor.write_csv('output/test_thread.csv', CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
+    # CSVExecutor.write_csv('output/keyword8.csv', keywords)
