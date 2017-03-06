@@ -1,7 +1,13 @@
 from pythainlp.segment import segment
 import re
 from nltk.util import ngrams
+import CSVExecutor
 
+emoji = CSVExecutor.read_csv('Dataset/EMOJI_LIST.csv')
+emoji_list = []
+for i in emoji:
+    for j in i:
+        emoji_list.append(j)
 
 """
 word: any words you want to clean
@@ -9,6 +15,8 @@ word: any words you want to clean
 def word_cleaning(word):
     only_thai = re.sub(r'[^ก-ูเ-์]', '', word)
     only_thai = re.sub(r'ๆ', '', only_thai)
+    only_thai = re.sub(r'ๅ', '', only_thai)
+    only_thai = re.sub(r'ฯ', '', only_thai)
     except_word = ['กก']
     idx = 0
     while idx < len(only_thai):
@@ -64,13 +72,14 @@ def frequency_occur_in_keyword(word, keyword, maxGram):
     segmented_word = []
     for w in keyword:
         freq_table[w] = 0
-    for t in range(1, maxGram + 1):
-        if t == 0:
-            segmented_word = createNgram(word, t)
-        else:
-            segmented_word = segmented_word + createNgram(word, t)
+    for t in range(1, maxGram + 1): 
+        segmented_word = segmented_word + createNgram(word, t) 
     for kw in keyword:
-        freq_table[kw] = segmented_word.count(kw)
+        if kw not in emoji_list:
+            freq_table[kw] = segmented_word.count(kw)
+        else:
+            freq_table[kw] = word.count(kw)
+    del segmented_word
     return freq_table
 
 """
@@ -88,6 +97,11 @@ def createNgram(word, gram):
     for t in grams:
         ret_word.append(''.join(t))
     return ret_word
+
+def add_emoji_keyword(keyword_list):
+    for item in emoji_list:
+        keyword_list.append(item)
+    return keyword_list
 
 def remove_stop_word(keywords):
     with open("./Dataset/stop_word.txt", "r" , encoding='utf-8') as file:

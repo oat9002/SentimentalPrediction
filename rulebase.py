@@ -1,8 +1,7 @@
+# -*- coding: utf-8 -*-
 import CSVExecutor
 import WordExecutor
 import random
-import emoji
-
 
 def check_emo_in_word(keyword_list, emoji_list, word):
     if check_emoji_in_word(emoji_list, word):
@@ -55,6 +54,11 @@ def check_emo(data):
         data[1:] = ['']*8
         data[revert_emo_to_number(emo)] = emo
     return data
+
+def get_predicted(data):
+    for i in data[1:]:
+        if i != '':
+            return revert_emo_to_number(i)
 
 def get_emo(number):
     if number == 1:
