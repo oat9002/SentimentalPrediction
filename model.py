@@ -8,6 +8,7 @@ import weka.core.serialization as serialization
 import numpy as np
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.externals import joblib
+import rulebase
 
 ############################# Weka ###################################################
 """
@@ -64,6 +65,21 @@ path: path where you want to read
 """
 def read_model_weka(path):
     return Classifier(jobject=serialization.read(path))
+
+"""
+Fill empty data in column 10 if column 9 is 1
+"""
+def reformatted_data(data):
+    stm = data[1:9]
+    if data[9] != 1:
+        for i in stm:
+            if i != '':
+                emo = rulebase.revert_emo_to_number(i)
+                data[10] = emo
+    del data[1:10]
+    return data
+
+
 
 ######################### Scikit Learn #########################################
 def multinominal_naive_bayes_classifier(dataset, target):
