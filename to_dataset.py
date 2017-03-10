@@ -39,7 +39,7 @@ def start_thread(thread_each_lap, threads):
         for i in range(0, thread_each_lap):
             if idx_join < len(threads):
                 threads[idx_join].join()
-                print('Finish thread: ' + str(idx_join + 1))
+                # print('Finish thread: ' + str(idx_join + 1))
                 idx_join += 1 
             else:
                 break
@@ -53,7 +53,7 @@ def create_dataset_without_emoticon(input_path, output_path):
     # bigram = WordExecutor.create_ngram_from_list_bynltk(words, 2)
     # trigram = WordExecutor.create_ngram_from_list_bynltk(words, 3)
 
-    # u = WordExecutor.add_emoji_keyword(unigram)
+    u = WordExecutor.add_emoji_keyword(unigram)
     # ub = WordExecutor.add_emoji_keyword(unigram + bigram)
     # ubt = WordExecutor.add_emoji_keyword(unigram + bigram + trigram)
 
@@ -75,7 +75,6 @@ def create_dataset_without_emoticon(input_path, output_path):
         else:
             t = Thread(target=caculate_freq_for_thread, args=(0, total_thread[i], library, freq, u, 1))
         threads.append(t)
-    print('Here')
     start_thread(thread_each_lap=4, threads=threads)
     print('Finished')
     CSVExecutor.write_csv(output_path, CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
@@ -113,17 +112,36 @@ def create_dataset_with_emoticon(input_path, output_path):
         else:
             t = Thread(target=caculate_freq_for_thread, args=(0, total_thread[i], library, freq, u, 1))
         threads.append(t)
-    print('Here')
     start_thread(thread_each_lap=4, threads=threads)
     print('Finished')
     CSVExecutor.write_csv(output_path, CSVExecutor.to_dataset_format(freq, sorted(freq[0][0].keys())))
     print(time.time() - now)
 
-if __name__ == '__main__':   
-    create_dataset_with_emoticon(input_path='./output/For paper/train_1_formatted.csv', output_path='./output/For paper/train_1_with_emoticon.csv')
-    create_dataset_with_emoticon(input_path='./output/For paper/train_1+2_formatted.csv', output_path='./output/For paper/train_1+2_with_emoticon.csv')
-    create_dataset_with_emoticon(input_path='./output/For paper/train_1_formatted.csv', output_path='./output/For paper/train_1_without_emoticon.csv')
-    create_dataset_with_emoticon(input_path='./output/For paper/train_1+2_formatted.csv', output_path='./output/For paper/train_1+2_without_emoticon.csv')
+if __name__ == '__main__':
+    print('tratrain_1_with_emoticon')   
+    for i in range(1, 11):
+        print('Time: ' + str(i))
+        create_dataset_with_emoticon(input_path='./Dataset/For paper/train_1_formatted.csv', output_path='./output/For paper/train_1_with_emoticon.csv')
+    print('\ntratrain_1+2_with_emoticon')   
+    for i in range(1, 11):
+        print('Time: ' + str(i))
+        create_dataset_with_emoticon(input_path='./Dataset/For paper/train_1+2_formatted.csv', output_path='./output/For paper/train_1+2_with_emoticon.csv')
+    print('\ntratrain_2_with_emoticon')   
+    for i in range(1, 11):
+        print('Time: ' + str(i))    
+        create_dataset_with_emoticon(input_path='./Dataset/For paper/train_2_formatted.csv', output_path='./output/For paper/train_2_with_emoticon.csv')
+    print('\ntratrain_1_without_emoticon')   
+    for i in range(1, 11):
+        print('Time: ' + str(i))    
+        create_dataset_without_emoticon(input_path='./Dataset/For paper/train_1_formatted.csv', output_path='./output/For paper/train_1_without_emoticon.csv')
+    print('\ntratrain_1+2_without_emoticon')   
+    for i in range(1, 11):
+        print('Time: ' + str(i))  
+        create_dataset_without_emoticon(input_path='./Dataset/For paper/train_1+2_formatted.csv', output_path='./output/For paper/train_1+2_without_emoticon.csv')
+    print('\ntratrain_2_without_emoticon')   
+    for i in range(1, 11):
+        print('Time: ' + str(i))  
+        create_dataset_without_emoticon(input_path='./Dataset/For paper/train_2_formatted.csv', output_path='./output/For paper/train_2_without_emoticon.csv')
 
     # freq = []
     # for li in library:
