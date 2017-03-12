@@ -125,11 +125,11 @@ def _to_scikitlearn_dataset(start, end, data, attribute, formatted):
         for h in attribute:
             if h != 'class':
                 freq_t.append(data[i][0].get(h))
-        formatted.append(freq_t)
+        formatted[i] = freq_t
 
 def to_scikitlearn_dataset(data, attribute):
     threads = []
-    formatted = []
+    formatted = [None] * len(data)
     divided = divided_thread_len_end(len(data), total_thread=4)
     for i in range(0, len(divided)):
         if i != 0:
