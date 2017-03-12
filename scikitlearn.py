@@ -49,48 +49,7 @@ def start_thread(thread_each_lap, threads):
 
 
 if __name__ == '__main__':
-    # now = time()
-    # library = CSVExecutor.read_csv('./output/For paper/train_1+2_formatted.csv')
-    # words = []
-    # for li in library:
-    #     words.append(li[0])
-    # unigram = WordExecutor.create_ngram_from_list_bynltk(words, 1)
-    # bigram = WordExecutor.create_ngram_from_list_bynltk(words, 2)
-    # trigram = WordExecutor.create_ngram_from_list_bynltk(words, 3)
-
-    # u = unigram
-    # ub = unigram + bigram
-    # ubt = unigram + bigram + trigram
-
-    # u = WordExecutor.remove_stop_word(u)
-    # u = WordExecutor.remove_strange_word_and_normalize(u)
-
-    # ub = WordExecutor.remove_stop_word(ub)
-    # ub = WordExecutor.remove_strange_word_and_normalize(ub)
-
-    # ubt = WordExecutor.remove_stop_word(ubt)
-    # ubt = WordExecutor.remove_strange_word_and_normalize(ubt)
-    # keywords = CSVExecutor.read_csv('./output/lated_keyword.csv')[0]
-    # freq = []
-    # total_thread = divided_thread_len_end(size=len(library), total_thread=8)
-    # threads = []
-    # for i in range(0, len(total_thread)):
-    #     if i != 0:
-    #         t = Thread(target=caculate_freq_for_thread, args=(total_thread[i - 1], total_thread[i], library, freq, keywords, 1))
-    #     else:
-    #         t = Thread(target=caculate_freq_for_thread, args=(0, total_thread[i], library, freq, keywords, 1))
-    #     threads.append(t)
-    # start_thread(thread_each_lap=4, threads=threads)
-
-    # dataset = WordExecutor.to_scikitlearn_dataset(data=freq, attribute=sorted(keywords))
-    # target = WordExecutor.get_labeled_class(data=freq)
-
-    # tfidf_transformer = TfidfTransformer()
-    # tfidf = tfidf_transformer.fit_transform(dataset)
-
-    # clf = MultinomialNB()
-    # clf.fit(dataset, target)
-
+    now = time()
     keywords = CSVExecutor.read_csv('./output/lated_keyword.csv')[0]
     clf = model.read_model_scikitlearn('./output/mnnb.pkl')
     # model.save_model_scikitlearn(classifier=clf, path='output/mnnb_tfidf.pkl')
