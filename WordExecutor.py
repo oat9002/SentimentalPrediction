@@ -153,14 +153,17 @@ def divided_thread_len_end(size, total_thread):
     thread_len_end = []
     temp = 0
     t_size = size
-    for idx in range(0, total_thread):
-        divide = int(size / total_thread)
-        if idx != total_thread - 1:
-            thread_len_end.append(divide + temp)
-            t_size -= divide
-        else:
-            thread_len_end.append(t_size + temp)
-        temp += divide
+    if(size >= total_thread):
+        for idx in range(0, total_thread):
+            divide = int(size / total_thread)
+            if idx != total_thread - 1:
+                thread_len_end.append(divide + temp)
+                t_size -= divide
+            else:
+                thread_len_end.append(t_size + temp)
+            temp += divide
+    else:
+        thread_len_end.append(size)
     return thread_len_end
 
 
