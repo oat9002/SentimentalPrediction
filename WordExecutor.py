@@ -2,6 +2,7 @@ from pythainlp.segment import segment
 import re
 from nltk.util import ngrams
 import CSVExecutor
+from threading import Thread
 
 emoji = CSVExecutor.read_csv('Dataset/EMOJI_LIST.csv')
 emoji_list = []
@@ -118,27 +119,48 @@ def remove_strange_word_and_normalize(keywords):
         keywords.remove('')
     return list(set(keywords))
 
-def to_scikitlearn_dataset(data, attribute):
-    formatted = []
-    for item in data:
+def _to_scikitlearn_dataset(start, end, data, attribute, formatted):
+    for i in range(start, end):
         freq_t = []
         for h in attribute:
             if h != 'class':
-                freq_t.append(item[0].get(h))
+                freq_t.append(data[i][0].get(h))
         formatted.append(freq_t)
+
+def to_scikitlearn_dataset(data, attribute):
+    threads = []
+    formatted = []
+    divided = divided_thread_len_end(len(data), total_thread=4)
+    for i in range(0, len(divided)):
+        if i != 0:
+            t = Thread(target=_to_scikitlearn_dataset, args=(divided[i - 1], divided[i], data, attribute, formatted))
+        else:
+            t = Thread(target=_to_scikitlearn_dataset, args=(0, divided[i], data, attribute, formatted))
+        threads.append(t)
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
     return formatted
 
 def get_labeled_class(data):
-    attrs = []
+    classes = []
     for item in data:
-        attrs.append(item[1])
-    return sorted(attrs)
+        classes.append(item[1])
+    return classes
 
-# word = "กกกกกใข่"
-# print(word_cleaning(word))
-# remove_strangeword(123)
-# library.append("ฉันอยู่ที่นี่มี ความสุขจัง")
-# library.append("ฉันอยาก ไปอีก จัง")
-# key = create_keyword_thaionly(library)
-# print(key)
-# print(sorted(frequency_occur_in_keyword(word = library[0], keyword = key).keys()))
+def divided_thread_len_end(size, total_thread):
+    thread_len_end = []
+    temp = 0
+    t_size = size
+    for idx in range(0, total_thread):
+        divide = int(size / total_thread)
+        if idx != total_thread - 1:
+            thread_len_end.append(divide + temp)
+            t_size -= divide
+        else:
+            thread_len_end.append(t_size + temp)
+        temp += divide
+    return thread_len_end
+
+
