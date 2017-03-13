@@ -124,7 +124,10 @@ def _to_scikitlearn_dataset(start, end, data, attribute, formatted):
         freq_t = []
         for h in attribute:
             if h != 'class':
-                freq_t.append(data[i][0].get(h))
+                if len(data[i] > 1):
+                    freq_t.append(data[i][0].get(h))
+                else:
+                    freq_t.append(data[i].get(h))
         formatted[i] = freq_t
 
 def to_scikitlearn_dataset(data, attribute):

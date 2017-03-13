@@ -103,10 +103,10 @@ def revert_emo_to_number(emo):
         print('Enter a wrong emo.')
 
 
-"""
-data: Array
-"""
 def predict_by_multinominal_naive_bayes(classifier_path, keywords_path, data):
+    """
+    data: Array
+    """
     clf = model.read_model_scikitlearn(classifier_path)
     keywords = CSVExecutor.read_csv(keywords_path)[0]
 
@@ -139,7 +139,7 @@ def divided_thread_len_end(size, total_thread):
                 thread_len_end.append(t_size + temp)
             temp += divide
     else:
-        hread_len_end.append(size)
+        thread_len_end.append(size)
     return thread_len_end
 
 
@@ -168,4 +168,7 @@ def start_thread(thread_each_lap, threads):
     else:
         threads[0].start()
         threads[0].join()
+
+if __name__ == '__main__':
+    print(predict_by_multinominal_naive_bayes('./Dataset/mnnb.pkl', './Dataset/lated_keyword.csv', ['ไปโรงเรียน']))
 

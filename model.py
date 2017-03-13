@@ -8,7 +8,12 @@ import weka.core.serialization as serialization
 import numpy as np
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.externals import joblib
+from sklearn.model_selection import cross_val_predict
+from sklearn.feature_extraction.text import TfidfTransformer
 import rulebase
+import WordExecutor
+import CSVExecutor
+from threading import Thread
 
 ############################# Weka ###################################################
 """
@@ -109,13 +114,13 @@ def multinominal_naive_bayes_classifier_with_tfidf(dataset_path):
     threads = []
     for i in range(0, len(total_thread)):
         if i != 0:
-            t = Thread(target=caculate_freq_for_thread, args=(total_thread[i - 1], total_thread[i], library, freq, keywords, 1))
+            t = Thread(target=caculate_freq_for_thread, args=(total_thread[i - 1], total_thread[i], library, freq, u, 1))
         else:
-            t = Thread(target=caculate_freq_for_thread, args=(0, total_thread[i], library, freq, keywords, 1))
+            t = Thread(target=caculate_freq_for_thread, args=(0, total_thread[i], library, freq, u, 1))
         threads.append(t)
     start_thread(thread_each_lap=4, threads=threads)
 
-    dataset = WordExecutor.to_scikitlearn_dataset(data=freq, attribute=sorted(keywords))
+    dataset = WordExecutor.to_scikitlearn_dataset(data=freq, attribute=sorted(u))
     target = WordExecutor.get_labeled_class(data=freq)
 
     tfidf_transformer = TfidfTransformer()
@@ -151,13 +156,13 @@ def multinominal_naive_bayes_classifier(dataset_path):
     threads = []
     for i in range(0, len(total_thread)):
         if i != 0:
-            t = Thread(target=caculate_freq_for_thread, args=(total_thread[i - 1], total_thread[i], library, freq, keywords, 1))
+            t = Thread(target=caculate_freq_for_thread, args=(total_thread[i - 1], total_thread[i], library, freq, u, 1))
         else:
-            t = Thread(target=caculate_freq_for_thread, args=(0, total_thread[i], library, freq, keywords, 1))
+            t = Thread(target=caculate_freq_for_thread, args=(0, total_thread[i], library, freq, u, 1))
         threads.append(t)
     start_thread(thread_each_lap=4, threads=threads)
 
-    dataset = WordExecutor.to_scikitlearn_dataset(data=freq, attribute=sorted(keywords))
+    dataset = WordExecutor.to_scikitlearn_dataset(data=freq, attribute=sorted(u))
     target = WordExecutor.get_labeled_class(data=freq)
 
     clf = MultinomialNB()
@@ -187,5 +192,31 @@ def divided_thread_len_end(size, total_thread):
                 thread_len_end.append(t_size + temp)
             temp += divide
     else:
-        hread_len_end.append(size)
+        thread_len_end.append(size)
     return thread_len_end
+
+def caculate_freq_for_thread(start, end, dataset, freq, keyword, gram):
+    for idx in range(start, end):
+        freq.append(WordExecutor.frequency_occur_in_keyword(dataset[idx], keyword, gram))
+
+def start_thread(thread_each_lap, threads):
+    idx_start = 0
+    idx_join = 0
+    if thread_each_lap < len(threads):
+        while idx_start < len(threads) or idx_join < len(threads):
+            for i in range(0, thread_each_lap):
+                if idx_start < len(threads):
+                    threads[idx_start].start()
+                    idx_start += 1
+                else:
+                    break
+            for i in range(0, thread_each_lap):
+                if idx_join < len(threads):
+                    threads[idx_join].join()
+                    # print('Finish thread: ' + str(idx_join + 1))
+                    idx_join += 1 
+                else:
+                    break
+    else:
+        threads[0].start()
+        threads[0].join()

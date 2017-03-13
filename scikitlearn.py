@@ -50,11 +50,11 @@ def start_thread(thread_each_lap, threads):
 
 if __name__ == '__main__':
     now = time()
-    keywords = CSVExecutor.read_csv('./output/lated_keyword.csv')[0]
-    clf = model.read_model_scikitlearn('./output/mnnb.pkl')
+    keywords = CSVExecutor.read_csv('./Dataset/lated_keyword.csv')[0]
+    clf = model.read_model_scikitlearn('./Dataset/mnnb.pkl')
     # model.save_model_scikitlearn(classifier=clf, path='output/mnnb_tfidf.pkl')
 
-    test = CSVExecutor.read_csv('./output/For paper/train_2_formatted.csv')
+    test = CSVExecutor.read_csv('./Dataset/For paper/train_2_formatted.csv')
     
     freq_test = []
     total_thread = divided_thread_len_end(size=len(test), total_thread=4)
