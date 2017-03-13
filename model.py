@@ -8,6 +8,7 @@ import weka.core.serialization as serialization
 import numpy as np
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.externals import joblib
+import rulebase
 
 ############################# Weka ###################################################
 """
@@ -65,8 +66,100 @@ path: path where you want to read
 def read_model_weka(path):
     return Classifier(jobject=serialization.read(path))
 
+"""
+Fill empty data in column 10 if column 9 is 1
+"""
+def reformatted_data(data):
+    stm = data[1:9]
+    if data[9] != 1:
+        for i in stm:
+            if i != '':
+                emo = rulebase.revert_emo_to_number(i)
+                data[10] = emo
+    del data[1:10]
+    return data
+
+
+
 ######################### Scikit Learn #########################################
-def multinominal_naive_bayes_classifier(dataset, target):
+def multinominal_naive_bayes_classifier_with_tfidf(dataset_path):
+    library = CSVExecutor.read_csv(dataset_path)
+    words = []
+    for li in library:
+        words.append(li[0])
+    unigram = WordExecutor.create_ngram_from_list_bynltk(words, 1)
+    # bigram = WordExecutor.create_ngram_from_list_bynltk(words, 2)
+    # trigram = WordExecutor.create_ngram_from_list_bynltk(words, 3)
+
+    u = unigram
+    # ub = unigram + bigram
+    # ubt = unigram + bigram + trigram
+
+    # u = WordExecutor.remove_stop_word(u)
+    u = WordExecutor.remove_strange_word_and_normalize(u)
+
+    # ub = WordExecutor.remove_stop_word(ub)
+    # ub = WordExecutor.remove_strange_word_and_normalize(ub)
+
+    # ubt = WordExecutor.remove_stop_word(ubt)
+    # ubt = WordExecutor.remove_strange_word_and_normalize(ubt)
+
+    freq = []
+    total_thread = divided_thread_len_end(size=len(library), total_thread=8)
+    threads = []
+    for i in range(0, len(total_thread)):
+        if i != 0:
+            t = Thread(target=caculate_freq_for_thread, args=(total_thread[i - 1], total_thread[i], library, freq, keywords, 1))
+        else:
+            t = Thread(target=caculate_freq_for_thread, args=(0, total_thread[i], library, freq, keywords, 1))
+        threads.append(t)
+    start_thread(thread_each_lap=4, threads=threads)
+
+    dataset = WordExecutor.to_scikitlearn_dataset(data=freq, attribute=sorted(keywords))
+    target = WordExecutor.get_labeled_class(data=freq)
+
+    tfidf_transformer = TfidfTransformer()
+    tfidf = tfidf_transformer.fit_transform(dataset)
+    clf = MultinomialNB()
+    clf.fit(tfidf, target)
+    return clf
+
+    def multinominal_naive_bayes_classifier_with_tfidf(dataset_path):
+    library = CSVExecutor.read_csv(dataset_path)
+    words = []
+    for li in library:
+        words.append(li[0])
+    unigram = WordExecutor.create_ngram_from_list_bynltk(words, 1)
+    # bigram = WordExecutor.create_ngram_from_list_bynltk(words, 2)
+    # trigram = WordExecutor.create_ngram_from_list_bynltk(words, 3)
+
+    u = unigram
+    # ub = unigram + bigram
+    # ubt = unigram + bigram + trigram
+
+    # u = WordExecutor.remove_stop_word(u)
+    u = WordExecutor.remove_strange_word_and_normalize(u)
+
+    # ub = WordExecutor.remove_stop_word(ub)
+    # ub = WordExecutor.remove_strange_word_and_normalize(ub)
+
+    # ubt = WordExecutor.remove_stop_word(ubt)
+    # ubt = WordExecutor.remove_strange_word_and_normalize(ubt)
+
+    freq = []
+    total_thread = divided_thread_len_end(size=len(library), total_thread=8)
+    threads = []
+    for i in range(0, len(total_thread)):
+        if i != 0:
+            t = Thread(target=caculate_freq_for_thread, args=(total_thread[i - 1], total_thread[i], library, freq, keywords, 1))
+        else:
+            t = Thread(target=caculate_freq_for_thread, args=(0, total_thread[i], library, freq, keywords, 1))
+        threads.append(t)
+    start_thread(thread_each_lap=4, threads=threads)
+
+    dataset = WordExecutor.to_scikitlearn_dataset(data=freq, attribute=sorted(keywords))
+    target = WordExecutor.get_labeled_class(data=freq)
+
     clf = MultinomialNB()
     clf.fit(dataset, target)
     return clf

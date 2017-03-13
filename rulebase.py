@@ -2,6 +2,7 @@
 import CSVExecutor
 import WordExecutor
 import random
+import model
 
 def check_emo_in_word(keyword_list, emoji_list, word):
     if check_emoji_in_word(emoji_list, word):
@@ -99,3 +100,71 @@ def revert_emo_to_number(emo):
         return 8
     else:
         print('Enter a wrong emo.')
+
+
+"""
+data: Array
+"""
+def predict_by_multinominal_naive_bayes(classifier_path, keywords_path, data):
+    clf = model.read_model_scikitlearn(classifier_path)
+    keywords = CSVExecutor.read_csv(keywords_path)[0]
+
+    freq_test = []
+    total_thread = divided_thread_len_end(size=len(data), total_thread=4)
+    threads = []
+    for i in range(0, len(total_thread)):
+        if i != 0:
+            t = Thread(target=caculate_freq_for_thread, args=(total_thread[i - 1], total_thread[i], data, freq_test, keywords, 1))
+        else:
+            t = Thread(target=caculate_freq_for_thread, args=(0, total_thread[i], data, freq_test, keywords, 1))
+        threads.append(t)
+    start_thread(thread_each_lap=4, threads=threads)
+
+    testset = WordExecutor.to_scikitlearn_dataset(data=freq_test, attribute=sorted(keywords))
+    predicted = clf.predict(testset)
+    return predicted
+
+def divided_thread_len_end(size, total_thread):
+    thread_len_end = []
+    temp = 0
+    t_size = size
+    if size >= total_thread:
+        for idx in range(0, total_thread):
+            divide = int(size / total_thread)
+            if idx != total_thread - 1:
+                thread_len_end.append(divide + temp)
+                t_size -= divide
+            else:
+                thread_len_end.append(t_size + temp)
+            temp += divide
+    else:
+        hread_len_end.append(size)
+    return thread_len_end
+
+
+def caculate_freq_for_thread(start, end, dataset, freq, keyword, gram):
+    for idx in range(start, end):
+        freq.append(WordExecutor.frequency_occur_in_keyword(dataset[idx], keyword, gram)
+
+def start_thread(thread_each_lap, threads):
+    idx_start = 0
+    idx_join = 0
+    if thread_each_lap < len(threads):
+        while idx_start < len(threads) or idx_join < len(threads):
+            for i in range(0, thread_each_lap):
+                if idx_start < len(threads):
+                    threads[idx_start].start()
+                    idx_start += 1
+                else:
+                    break
+            for i in range(0, thread_each_lap):
+                if idx_join < len(threads):
+                    threads[idx_join].join()
+                    # print('Finish thread: ' + str(idx_join + 1))
+                    idx_join += 1 
+                else:
+                    break
+    else:
+        threads[0].start()
+        threads[0].join()
+
