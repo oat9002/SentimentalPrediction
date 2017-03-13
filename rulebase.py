@@ -103,12 +103,12 @@ def revert_emo_to_number(emo):
         print('Enter a wrong emo.')
 
 
-def predict_by_multinominal_naive_bayes(classifier_path, keywords_path, data):
+def predict_by_multinominal_naive_bayes(classifier_path, attribute_path, data):
     """
     data: Array
     """
     clf = model.read_model_scikitlearn(classifier_path)
-    keywords = CSVExecutor.read_csv(keywords_path)[0]
+    keywords = CSVExecutor.read_csv(attribute_path)[0]
 
     freq_test = []
     total_thread = divided_thread_len_end(size=len(data), total_thread=4)
@@ -143,9 +143,9 @@ def divided_thread_len_end(size, total_thread):
     return thread_len_end
 
 
-def caculate_freq_for_thread(start, end, dataset, freq, keyword, gram):
+def caculate_freq_for_thread(start, end, dataset, freq, attribute, gram):
     for idx in range(start, end):
-        freq.append(WordExecutor.frequency_occur_in_keyword(dataset[idx], keyword, gram))
+        freq.append(WordExecutor.frequency_occur_in_keyword(dataset[idx], attribute, gram))
 
 def start_thread(thread_each_lap, threads):
     idx_start = 0
