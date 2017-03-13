@@ -124,7 +124,7 @@ def multinominal_naive_bayes_classifier_with_tfidf(dataset_path):
     clf.fit(tfidf, target)
     return clf
 
-    def multinominal_naive_bayes_classifier_with_tfidf(dataset_path):
+def multinominal_naive_bayes_classifier_with_tfidf(dataset_path):
     library = CSVExecutor.read_csv(dataset_path)
     words = []
     for li in library:

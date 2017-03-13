@@ -144,7 +144,7 @@ def divided_thread_len_end(size, total_thread):
 
 def caculate_freq_for_thread(start, end, dataset, freq, keyword, gram):
     for idx in range(start, end):
-        freq.append(WordExecutor.frequency_occur_in_keyword(dataset[idx], keyword, gram)
+        freq.append(WordExecutor.frequency_occur_in_keyword(dataset[idx], keyword, gram))
 
 def start_thread(thread_each_lap, threads):
     idx_start = 0
