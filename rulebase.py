@@ -3,6 +3,7 @@ import CSVExecutor
 import WordExecutor
 import random
 import model
+from threading import Thread
 
 def check_emo_in_word(keyword_list, emoji_list, word):
     if check_emoji_in_word(emoji_list, word):

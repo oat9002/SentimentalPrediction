@@ -124,7 +124,7 @@ def multinominal_naive_bayes_classifier_with_tfidf(dataset_path):
     clf.fit(tfidf, target)
     return clf
 
-def multinominal_naive_bayes_classifier_with_tfidf(dataset_path):
+def multinominal_naive_bayes_classifier(dataset_path):
     library = CSVExecutor.read_csv(dataset_path)
     words = []
     for li in library:
@@ -172,3 +172,20 @@ def save_model_scikitlearn(classifier, path):
 
 def read_model_scikitlearn(path):
     return joblib.load(path)
+
+def divided_thread_len_end(size, total_thread):
+    thread_len_end = []
+    temp = 0
+    t_size = size
+    if size >= total_thread:
+        for idx in range(0, total_thread):
+            divide = int(size / total_thread)
+            if idx != total_thread - 1:
+                thread_len_end.append(divide + temp)
+                t_size -= divide
+            else:
+                thread_len_end.append(t_size + temp)
+            temp += divide
+    else:
+        hread_len_end.append(size)
+    return thread_len_end
