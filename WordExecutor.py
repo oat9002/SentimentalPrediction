@@ -18,6 +18,7 @@ def word_cleaning(word):
     only_thai = re.sub(r'ๆ', '', only_thai)
     only_thai = re.sub(r'ๅ', '', only_thai)
     only_thai = re.sub(r'ฯ', '', only_thai)
+    except_char = ['ั', 'ี', 'ึ', 'ิ', 'ื']
     except_word = ['กก']
     idx = 0
     while idx < len(only_thai):
@@ -28,17 +29,18 @@ def word_cleaning(word):
             if idx_t < len(only_thai):
                 if ch_t == only_thai[idx_t]:
                     idx_t += 1
-                    duplicate = True
+                    if only_thai[idx_t] not in except_char and (idx_t + 1) < len(only_thai):
+                        duplicate = True
+                    else:
+                        break
                 else:
                     break
             else:
                 break
         if duplicate:
             omit = False
-            for ex in except_word:
-                if ex == only_thai[idx: idx_t]:
-                    omit = True
-                    break
+            if only_thai[idx: idx_t] in except_word:
+                omit = True
             if not omit:
                 if idx_t != len(only_thai) - 1:
                     only_thai = only_thai[:idx + 1] + only_thai[idx_t:]
@@ -169,4 +171,8 @@ def divided_thread_len_end(size, total_thread):
         thread_len_end.append(size)
     return thread_len_end
 
+if __name__ == '__main__':
+    a = "มากกกกกกกโขขขขขขขวันนี้้้้้้"
+    print(word_cleaning(a))
+    
 
