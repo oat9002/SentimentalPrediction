@@ -46,39 +46,40 @@ words = CSVExecutor.read_csv('Dataset/Ktest/test_emoji.csv')
 list = []
 for wd in words:
     temp = []
+    emo_count = []
     temp.append(wd[0])
-    if rulebase.check_emo_in_word(joy_list,joy_list_emo, wd[0]):
+    if rulebase.check_emo_in_word(joy_list,joy_list_emo, wd[0], emo_count):
         temp.append('joy')
     else:
         temp.append('')
-    if rulebase.check_emo_in_word(sadness_list,sadness_list_emo, wd[0]):
+    if rulebase.check_emo_in_word(sadness_list,sadness_list_emo, wd[0], emo_count):
         temp.append('sadness')
     else:
         temp.append('')
-    if rulebase.check_emo_in_word(fear_list,fear_list_emo, wd[0]):
+    if rulebase.check_emo_in_word(fear_list,fear_list_emo, wd[0], emo_count):
         temp.append('fear')
     else:
         temp.append('')
-    if rulebase.check_emo_in_word(anger_list,anger_list_emo, wd[0]):
+    if rulebase.check_emo_in_word(anger_list,anger_list_emo, wd[0], emo_count):
         temp.append('anger')
     else:
         temp.append('')
-    if rulebase.check_emo_in_word(disgust_list,disgust_list_emo, wd[0]):
+    if rulebase.check_emo_in_word(disgust_list,disgust_list_emo, wd[0], emo_count):
         temp.append('disgust')
     else:
         temp.append('')
-    if rulebase.check_emo_in_word(surprise_list,surprise_list_emo, wd[0]):
+    if rulebase.check_emo_in_word(surprise_list,surprise_list_emo, wd[0], emo_count):
         temp.append('surprise')
     else:
         temp.append('')
-    if rulebase.check_emo_in_word(anticipation_list,anticipation_list_emo, wd[0]):
+    if rulebase.check_emo_in_word(anticipation_list,anticipation_list_emo, wd[0], emo_count):
         temp.append('anticipation')
     else:
         temp.append('')
-    if rulebase.check_emo_in_word(acceptance_list,acceptance_list_emo, wd[0]):
+    if rulebase.check_emo_in_word(acceptance_list,acceptance_list_emo, wd[0], emo_count):
         temp.append('acceptance')
     else:
         temp.append('')
-    list.append(rulebase.check_emo(temp))
+    list.append(rulebase.check_emo(temp, emo_count))
 CSVExecutor.write_csv('output/labeled_test_emoji.csv', list)
 # print(joy_list, sadness_list, fear_list, angry_list, disgust_list, surprise_list, anticipation_list, acceptance_list)

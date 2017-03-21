@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 # import model
@@ -7,7 +8,6 @@ import CSVExecutor
 import WordExecutor
 import requests
 import schedule
-import time
 
 client = MongoClient('mongodb://10.0.1.3:27017/')
 db = client['SocialData']
@@ -77,8 +77,8 @@ def summarize(data):
 
 def predict_cron():
     # start = datetime.today().replace(hour=0,minute=0,second=0, microsecond=0)
-    start = (datetime.now() - timedelta(days = 1)).replace(hour=0,minute=0,second=0, microsecond=0)
-    end = datetime.today().replace(hour=23,minute=59,second=59, microsecond=999999)
+    start = (datetime.now() - timedelta(hours=3)).replace(minute=0,second=0, microsecond=0)
+    end = datetime.today()
     tweets = tweet_collection.find({"created_at": {"$gte": start, "$lte": end}})
     pred_list = []
     for tw in tweets:

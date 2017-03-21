@@ -5,40 +5,31 @@ import random
 import model
 from threading import Thread
 
-def check_emo_in_word(keyword_list, emoji_list, word):
-    if check_emoji_in_word(emoji_list, word):
-        return True
+def check_emo_in_word(keyword_list, emoji_list, word, emo_count):
+    _emo_count = check_emoji_in_word(emoji_list, word)
+    for item in keyword_list:
+       _emo_count += word.count(item)
+    emo_count.append(_emo_count)
+    if _emo_count == 0:
+        return False
     else:
-        u = WordExecutor.createNgram(word=word, gram=1)
-        ub = WordExecutor.createNgram(word=word, gram=2)
-        ubt = WordExecutor.createNgram(word=word, gram=3)
-
-        for item in keyword_list:
-            for w in u:
-                if item == w:
-                    return True
-            for w in ub:
-                if item == w:
-                    return True
-            for w in ubt:
-                if item == w:
-                    return True
-    return False
+        return True
 
 
 def check_emoji_in_word(emoji_list, word):
+    count = 0
     word = word.split(' ')
+    #cleaning word
     for idx, w in enumerate(word):
         if 'http' in w:
             del word[idx]
     word = ' '.join(word)
+    #start checking
     for item in emoji_list:
-        if item in word:
-            return True
-    return False
+        count += word.count(item)
+    return count
 
-
-def check_emo(data):
+def check_emo(data, emo_count):
     emo_list = data[1:]
     count = 0
     predicted_emo_list = []
@@ -48,19 +39,29 @@ def check_emo(data):
         else:
             predicted_emo_list.append(emo)
     if count == 8:
-        rand_num = random.randint(1, 8)
-        data[rand_num] = get_emo(number=rand_num)
+        data[7] = get_emo(7)
     elif count < 7:
-        rand_num = random.randint(0, len(predicted_emo_list) - 1)
-        emo = predicted_emo_list[rand_num]
-        data[1:] = ['']*8
+        emo = ''
+        emo_max = max(emo_count)
+        chk_rand = emo_count.count(emo_max)
+        if chk_rand == len(predicted_emo_list):
+            rand_num = random.randint(0, len(predicted_emo_list) - 1)
+            emo = predicted_emo_list[rand_num]
+        elif chk_rand == 1:
+            for idx, i in enumerate(emo_count):
+                if i == emo_max:
+                    emo = get_emo(idx + 1)
+                    break
+        else:
+            emo_max_list = []
+            for idx, i in enumerate(emo_count):
+                if i == emo_max:
+                    emo_max_list.append(idx + 1)
+            rand_num = random.randint(0, len(emo_max_list) - 1)
+            emo = predicted_emo_list[rand_num]
+        data[1:] = [''] * 8
         data[revert_emo_to_number(emo)] = emo
     return data
-
-def get_predicted(data):
-    for i in data[1:]:
-        if i != '':
-            return revert_emo_to_number(i)
 
 def get_emo(number):
     if number == 1:

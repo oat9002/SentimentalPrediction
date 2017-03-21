@@ -1,7 +1,7 @@
 import CSVExecutor
 import rulebase
 
-keyword_list = CSVExecutor.read_csv_without_first_strange_char("Dataset/KEYWORD_LIST.csv")
+keyword_list = CSVExecutor.read_csv_without_first_strange_char("Dataset/LIST_KEYWORD.csv")
 emoji_list = CSVExecutor.read_csv("Dataset/EMOJI_LIST.csv")
 icon_list = CSVExecutor.read_csv("Dataset/ICON_LIST.csv")
 for idx in range(0, len(keyword_list)):
@@ -31,44 +31,45 @@ anticipation_list_emo = emoji_list[6]+icon_list[6]
 acceptance_list_emo = emoji_list[7]+icon_list[7]
 
 
-data = CSVExecutor.read_csv(path='Dataset/train_NSC.csv')
+data = CSVExecutor.read_csv(path='Dataset/For paper/train_2.csv')
 for idx, inst in enumerate(data):
     if len(inst) != 1:
         temp = []
+        emo_count = []
         temp.append(inst[0])
-        if rulebase.check_emo_in_word(joy_list, joy_list_emo, inst[0]):
+        if rulebase.check_emo_in_word(joy_list, joy_list_emo, inst[0], emo_count):
             temp.append('joy')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(sadness_list, sadness_list_emo, inst[0]):
+        if rulebase.check_emo_in_word(sadness_list, sadness_list_emo, inst[0], emo_count):
             temp.append('sadness')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(fear_list, fear_list_emo, inst[0]):
+        if rulebase.check_emo_in_word(fear_list, fear_list_emo, inst[0], emo_count):
             temp.append('fear')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(angry_list, anticipation_list_emo, inst[0]):
+        if rulebase.check_emo_in_word(angry_list, anticipation_list_emo, inst[0], emo_count):
             temp.append('anger')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(disgust_list, disgust_list_emo, inst[0]):
+        if rulebase.check_emo_in_word(disgust_list, disgust_list_emo, inst[0], emo_count):
             temp.append('disgust')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(surprise_list, surprise_list_emo, inst[0]):
+        if rulebase.check_emo_in_word(surprise_list, surprise_list_emo, inst[0], emo_count):
             temp.append('surprise')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(anticipation_list, anticipation_list_emo, inst[0]):
+        if rulebase.check_emo_in_word(anticipation_list, anticipation_list_emo, inst[0], emo_count):
             temp.append('anticipation')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(acceptance_list, acceptance_list_emo, inst[0]):
+        if rulebase.check_emo_in_word(acceptance_list, acceptance_list_emo, inst[0], emo_count):
             temp.append('acceptance')
         else:
             temp.append('')
-        predict = rulebase.check_emo(temp)
+        predict = rulebase.check_emo(temp, emo_count)
         emo_predict = ''
         for stm in predict[1:]:
             if stm != '':
@@ -97,4 +98,4 @@ for idx, inst in enumerate(data):
                     data[idx][10] = rulebase.revert_emo_to_number(emo_default)
             data[idx][1:9] = predict[1:]
 
-CSVExecutor.write_csv(path='output/label_fix.csv', data=data)
+CSVExecutor.write_csv(path='output/For paper/train_2_test_new.csv', data=data)
