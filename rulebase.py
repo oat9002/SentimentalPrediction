@@ -58,7 +58,7 @@ def check_emo(data, emo_count):
                 if i == emo_max:
                     emo_max_list.append(idx + 1)
             rand_num = random.randint(0, len(emo_max_list) - 1)
-            emo = emo_max_list[rand_num]
+            emo = get_emo(emo_max_list[rand_num])
         data[1:] = [''] * 8
         data[revert_emo_to_number(emo)] = emo
     return data
