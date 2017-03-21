@@ -63,6 +63,11 @@ def check_emo(data, emo_count):
         data[revert_emo_to_number(emo)] = emo
     return data
 
+def get_predicted(data): 
+    for i in data[1:]: 
+        if i != '': 
+            return revert_emo_to_number(i) 
+
 def get_emo(number):
     if number == 1:
         return 'joy'

@@ -84,40 +84,41 @@ def predict_cron():
     for tw in tweets:
         temp = []
         pred = []
+        emo_count = []
         temp.append(tw['text'])
-        if rulebase.check_emo_in_word(joy_list,joy_list_emo, tw['text']):
+        if rulebase.check_emo_in_word(joy_list,joy_list_emo, tw['text'], emo_count):
             temp.append('joy')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(sadness_list,sadness_list_emo, tw['text']):
+        if rulebase.check_emo_in_word(sadness_list,sadness_list_emo, tw['text'], emo_count):
             temp.append('sadness')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(fear_list,fear_list_emo, tw['text']):
+        if rulebase.check_emo_in_word(fear_list,fear_list_emo, tw['text'], emo_count):
             temp.append('fear')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(anger_list,anger_list_emo, tw['text']):
+        if rulebase.check_emo_in_word(anger_list,anger_list_emo, tw['text'], emo_count):
             temp.append('anger')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(disgust_list,disgust_list_emo, tw['text']):
+        if rulebase.check_emo_in_word(disgust_list,disgust_list_emo, tw['text'], emo_count):
             temp.append('disgust')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(surprise_list,surprise_list_emo, tw['text']):
+        if rulebase.check_emo_in_word(surprise_list,surprise_list_emo, tw['text'], emo_count):
             temp.append('surprise')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(anticipation_list,anticipation_list_emo, tw['text']):
+        if rulebase.check_emo_in_word(anticipation_list,anticipation_list_emo, tw['text'], emo_count):
             temp.append('anticipation')
         else:
             temp.append('')
-        if rulebase.check_emo_in_word(acceptance_list,acceptance_list_emo, tw['text']):
+        if rulebase.check_emo_in_word(acceptance_list,acceptance_list_emo, tw['text'], emo_count):
             temp.append('acceptance')
         else:
             temp.append('')
-        pred.append(rulebase.get_predicted(rulebase.check_emo(temp)))
+        pred.append(rulebase.get_predicted(rulebase.check_emo(temp, emo_count)))
         pred.append(tw['place_id'])
         pred_list.append(pred)
     place = []
