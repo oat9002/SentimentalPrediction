@@ -8,11 +8,13 @@ import CSVExecutor
 import WordExecutor
 import requests
 import schedule
+import uuid
 
 client = MongoClient('mongodb://10.0.1.3:27017/')
 db = client['SocialData']
 tweet_collection = db.tweet
 predicted_collection = db.predicted
+predicted_tweets_collection = db.predicted_tweets
 
 # library = CSVExecutor.read_csv('./Dataset/8EMO_label.csv')
 # words = []
@@ -73,7 +75,44 @@ def summarize(data):
         temp['longitude'] = float(geolocation[1])
         result.append(temp)
     return result
-    
+
+def find_summarize_max_emo(summarize_data):
+    all_max_emo_list = []
+    for summ_data in summarize_data:
+        max_val = 0
+        max_emo_list = []
+        schema = {}
+        key_list = list(summ_data.keys())
+        schema['latitude'] = key_list['latitude']
+        schema['longitude'] = key_list['longitude']
+        del key_list['latitude']
+        del key_list['longitude']
+        for key in key_list:
+            if max_val < summ_data[key]:
+                max_val = summ_data[key]
+        for key in key_list:
+            if max_val == summ_data[key]:
+                max_emo_list.append(rulebase.revert_emo_to_number(key))
+        schema['max_emo_list'] = max_emo_list
+        all_max_emo_list.append(schema)
+    return all_max_emo_list
+
+def example_text_summarize(all_max_emo_list, tweets_list, predicted_id):
+    all_text = []
+    for amel in all_max_emo_list:
+        schema = {}
+        selected_tweets = []
+        for max_emo in amel['max_emo_list']:
+            for tw in tweets_list:
+                if max_emo == tw[0]:
+                    selected_tweets.append(tw[2])
+        schema['id'] = uuid.uuid4()
+        schema['showd_test'] = selected_tweets
+        schema['latitude'] = amel['latitude']
+        schema['longitude'] = amel['longitude']
+        schema['predicted_id'] = predicted_id
+        all_text.append(schema)
+    return all_text
 
 def predict_cron():
     # start = datetime.today().replace(hour=0,minute=0,second=0, microsecond=0)
@@ -120,6 +159,8 @@ def predict_cron():
             temp.append('')
         pred.append(rulebase.get_predicted(rulebase.check_emo(temp, emo_count)))
         pred.append(tw['place_id'])
+        pred.append(tw['text'])
+        pred.append(tw['id'])
         pred_list.append(pred)
     place = []
     for p in pred_list:
@@ -133,9 +174,13 @@ def predict_cron():
             if p == i[1]:
                 temp[p].append(i[0]) 
         place_with_pred.append(temp)
-    predicted_collection.insert_one({'predicted': summarize(place_with_pred)}).inserted_id
+    predicted = summarize(place_with_pred)
+    predicted_id = uuid.uuid4()
+    predicted_collection.insert_one({'id': predicted_id, 'predicted': predicted}).inserted_id
+    predicted_tweets_collection.insert_one({'predicted_tweets': example_text_summarize(find_summarize_max_emo(predicted), pred_list, predicted_id)})
+    
 
-schedule.every(3).minutes.do(predict_cron)
+schedule.every(5).minutes.do(predict_cron)
 while True:
     schedule.run_pending()
     time.sleep(1)
