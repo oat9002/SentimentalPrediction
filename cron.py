@@ -79,25 +79,25 @@ def summarize(data):
 def find_summarize_max_emo(summarize_data):
     all_max_emo_list = []
     for summ_data in summarize_data:
-        max_val = 0
+        max_val = 0.0
         max_emo_list = []
         schema = {}
         key_list = list(summ_data.keys())
-        schema['latitude'] = key_list['latitude']
-        schema['longitude'] = key_list['longitude']
-        del key_list['latitude']
-        del key_list['longitude']
+        schema['latitude'] = summ_data['latitude']
+        schema['longitude'] = summ_data['longitude']
+        key_list.remove('latitude')
+        key_list.remove('longitude')
         for key in key_list:
-            if max_val < summ_data[key]:
-                max_val = summ_data[key]
+            if max_val < float(summ_data[key]):
+                max_val = float(summ_data[key])
         for key in key_list:
-            if max_val == summ_data[key]:
+            if str(max_val) == summ_data[key]:
                 max_emo_list.append(rulebase.revert_emo_to_number(key))
         schema['max_emo_list'] = max_emo_list
         all_max_emo_list.append(schema)
     return all_max_emo_list
 
-def example_text_summarize(all_max_emo_list, tweets_list, predicted_id):
+def example_text_summarize(all_max_emo_list, tweets_list):
     all_text = []
     for amel in all_max_emo_list:
         schema = {}
@@ -106,18 +106,18 @@ def example_text_summarize(all_max_emo_list, tweets_list, predicted_id):
             for tw in tweets_list:
                 if max_emo == tw[0]:
                     selected_tweets.append(tw[2])
-        schema['id'] = uuid.uuid4()
-        schema['showd_test'] = selected_tweets
+        schema['showed_test'] = selected_tweets
         schema['latitude'] = amel['latitude']
         schema['longitude'] = amel['longitude']
-        schema['predicted_id'] = predicted_id
         all_text.append(schema)
     return all_text
 
 def predict_cron():
     # start = datetime.today().replace(hour=0,minute=0,second=0, microsecond=0)
     start = (datetime.now() - timedelta(hours=3)).replace(minute=0,second=0, microsecond=0)
+    start = start.replace(hour=start.hour - 7)
     end = datetime.today()
+    end = end.replace(hour=end.hour - 7)
     tweets = tweet_collection.find({"created_at": {"$gte": start, "$lte": end}})
     pred_list = []
     for tw in tweets:
@@ -175,9 +175,9 @@ def predict_cron():
                 temp[p].append(i[0]) 
         place_with_pred.append(temp)
     predicted = summarize(place_with_pred)
-    predicted_id = uuid.uuid4()
+    predicted_id = str(uuid.uuid4())
     predicted_collection.insert_one({'id': predicted_id, 'predicted': predicted}).inserted_id
-    predicted_tweets_collection.insert_one({'predicted_tweets': example_text_summarize(find_summarize_max_emo(predicted), pred_list, predicted_id)})
+    predicted_tweets_collection.insert_one({'id': str(uuid.uuid4()), 'predicted_tweets': example_text_summarize(find_summarize_max_emo(predicted), pred_list), 'predicted_id': predicted_id}).inserted_id
     
 
 schedule.every(5).minutes.do(predict_cron)
@@ -187,7 +187,8 @@ while True:
     # testset = WordExecutor.to_scikitlearn_dataset(data=freq_test, attribute=sorted(u))
     # pred_list = clf.predict(testset)
     # print(pred_list)
-
+# if __name__ == '__main__':
+#     predict_cron()
 # start = datetime.datetime(2017, 2, 1)
 # end = datetime.datetime(2017, 2, 2)
 
