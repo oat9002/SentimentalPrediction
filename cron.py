@@ -106,7 +106,7 @@ def example_text_summarize(all_max_emo_list, tweets_list):
             for tw in tweets_list:
                 if max_emo == tw[0]:
                     selected_tweets.append(tw[2])
-        schema['showed_test'] = selected_tweets
+        schema['showed_texts'] = list(set(selected_tweets))
         schema['latitude'] = amel['latitude']
         schema['longitude'] = amel['longitude']
         all_text.append(schema)
@@ -115,9 +115,9 @@ def example_text_summarize(all_max_emo_list, tweets_list):
 def predict_cron():
     # start = datetime.today().replace(hour=0,minute=0,second=0, microsecond=0)
     start = (datetime.now() - timedelta(hours=3)).replace(minute=0,second=0, microsecond=0)
-    start = start.replace(hour=start.hour - 7)
+    start = start - timedelta(hours=7)
     end = datetime.today()
-    end = end.replace(hour=end.hour - 7)
+    end = end - timedelta(hours=7)
     tweets = tweet_collection.find({"created_at": {"$gte": start, "$lte": end}})
     pred_list = []
     for tw in tweets:
