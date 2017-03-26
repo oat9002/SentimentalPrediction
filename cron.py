@@ -55,7 +55,7 @@ anticipation_list_emo = emoji_list[6]+icon_list[6]
 acceptance_list_emo = emoji_list[7]+icon_list[7]
 
 def summarize(data, pred_list):
-    print(data)
+    result = []
     for i in data:
         temp = {}
         key = list(i.keys())[0];
@@ -89,7 +89,6 @@ def summarize(data, pred_list):
     return result
 
 def find_summarize_max_emo(summarize_data):
-    print(summarize_data)
     max_val = 0.0
     max_emo_list = []
     key_list = list(summarize_data.keys())
@@ -99,7 +98,7 @@ def find_summarize_max_emo(summarize_data):
         if max_val < float(summarize_data[key]):
             max_val = float(summarize_data[key])
     for key in key_list:
-        if str(max_val) == summarize_data[key]:
+        if max_val - float(summarize_data[key]) < 0.00001:
             max_emo_list.append(rulebase.revert_emo_to_number(key))
     return max_emo_list
 
@@ -191,15 +190,15 @@ def predict_cron():
     predicted_collection.insert_one({'id': predicted_id, 'predicted': predicted}).inserted_id
     
 
-# schedule.every(5).minutes.do(predict_cron)
-# while True:
-#     schedule.run_pending()
-#     time.sleep(1)
+schedule.every(5).minutes.do(predict_cron)
+while True:
+    schedule.run_pending()
+    time.sleep(1)
     # testset = WordExecutor.to_scikitlearn_dataset(data=freq_test, attribute=sorted(u))
     # pred_list = clf.predict(testset)
     # print(pred_list)
-if __name__ == '__main__':
-    predict_cron()
+# if __name__ == '__main__':
+#     predict_cron()
 # start = datetime.datetime(2017, 2, 1)
 # end = datetime.datetime(2017, 2, 2)
 
