@@ -9,6 +9,7 @@ import WordExecutor
 import requests
 import schedule
 import uuid
+import random
 
 client = MongoClient('mongodb://10.0.1.3:27017/')
 db = client['SocialData']
@@ -53,64 +54,75 @@ surprise_list_emo = emoji_list[5]+icon_list[5]
 anticipation_list_emo = emoji_list[6]+icon_list[6]
 acceptance_list_emo = emoji_list[7]+icon_list[7]
 
-def summarize(data):
-    result = []
+def summarize(data, pred_list):
+    print(data)
     for i in data:
         temp = {}
-        key = ''
-        for d in i.keys():
-            key = d
+        key = list(i.keys())[0];
         total = len(i[key])
-        temp['joy'] = format((i[key].count(1) / total) * 100, '.2f')
-        temp['sadness'] = format((i[key].count(2) / total) * 100, '.2f')
-        temp['fear'] = format((i[key].count(3) / total) * 100, '.2f')
-        temp['anger'] = format((i[key].count(4) / total) * 100, '.2f')
-        temp['disgust'] = format((i[key].count(5) / total) * 100, '.2f')
-        temp['surprise'] = format((i[key].count(6) / total) * 100, '.2f')
-        temp['anticipation'] = format((i[key].count(7) / total) * 100, '.2f')
-        temp['acceptance'] = format((i[key].count(8) / total) * 100, '.2f')
+        if total != 0: 
+            temp['joy'] = format((i[key].count(1) / total) * 100, '.2f')
+            temp['sadness'] = format((i[key].count(2) / total) * 100, '.2f')
+            temp['fear'] = format((i[key].count(3) / total) * 100, '.2f')
+            temp['anger'] = format((i[key].count(4) / total) * 100, '.2f')
+            temp['disgust'] = format((i[key].count(5) / total) * 100, '.2f')
+            temp['surprise'] = format((i[key].count(6) / total) * 100, '.2f')
+            temp['anticipation'] = format((i[key].count(7) / total) * 100, '.2f')
+            temp['acceptance'] = format((i[key].count(8) / total) * 100, '.2f')
+        else:
+            temp['joy'] = format(0, '.2f')
+            temp['sadness'] = format(0, '.2f')
+            temp['fear'] = format(0, '.2f')
+            temp['anger'] = format(0, '.2f')
+            temp['disgust'] = format(0, '.2f')
+            temp['surprise'] = format(0, '.2f')
+            temp['anticipation'] = format(0, '.2f')
+            temp['acceptance'] = format(0, '.2f')
         geolocation = requests.get('http://localhost:5005/place', {'place_id': key}).json()['place']['geolocation']
         geolocation = geolocation.split(',')
         temp['latitude'] = float(geolocation[0])
         temp['longitude'] = float(geolocation[1])
+        max_emo_list = find_summarize_max_emo(temp)
+        temp['max_emo_list'] = max_emo_list
+        temp['predicted_texts'] = predicted_text_summarize(max_emo_list, pred_list, key)
         result.append(temp)
     return result
 
 def find_summarize_max_emo(summarize_data):
-    all_max_emo_list = []
-    for summ_data in summarize_data:
-        max_val = 0.0
-        max_emo_list = []
-        schema = {}
-        key_list = list(summ_data.keys())
-        schema['latitude'] = summ_data['latitude']
-        schema['longitude'] = summ_data['longitude']
-        key_list.remove('latitude')
-        key_list.remove('longitude')
-        for key in key_list:
-            if max_val < float(summ_data[key]):
-                max_val = float(summ_data[key])
-        for key in key_list:
-            if str(max_val) == summ_data[key]:
-                max_emo_list.append(rulebase.revert_emo_to_number(key))
-        schema['max_emo_list'] = max_emo_list
-        all_max_emo_list.append(schema)
-    return all_max_emo_list
+    print(summarize_data)
+    max_val = 0.0
+    max_emo_list = []
+    key_list = list(summarize_data.keys())
+    key_list.remove('latitude')
+    key_list.remove('longitude')
+    for key in key_list:
+        if max_val < float(summarize_data[key]):
+            max_val = float(summarize_data[key])
+    for key in key_list:
+        if str(max_val) == summarize_data[key]:
+            max_emo_list.append(rulebase.revert_emo_to_number(key))
+    return max_emo_list
 
-def example_text_summarize(all_max_emo_list, tweets_list):
-    all_text = []
-    for amel in all_max_emo_list:
-        schema = {}
-        selected_tweets = []
-        for max_emo in amel['max_emo_list']:
-            for tw in tweets_list:
+def predicted_text_summarize(max_emo_list, pred_list, place_id):
+    all_texts = []
+    selected_texts = []
+    for max_emo in max_emo_list:
+        for tw in pred_list:
+            if place_id == tw[1]:
                 if max_emo == tw[0]:
-                    selected_tweets.append(tw[2])
-        schema['showed_texts'] = list(set(selected_tweets))
-        schema['latitude'] = amel['latitude']
-        schema['longitude'] = amel['longitude']
-        all_text.append(schema)
-    return all_text
+                    all_texts.append(tw[2])
+    all_texts = list(set(all_texts))
+    if len(all_texts) > 3:
+        for i in range(0, 3):
+            rand = random.randint(0, len(all_texts) - 1)
+            selected_texts.append(all_texts[rand])
+            all_texts.remove(all_texts[rand])
+    else:
+        for i in range(0, len(all_texts)):
+            rand = random.randint(0, len(all_texts) - 1)
+            selected_texts.append(all_texts[rand])
+            all_texts.remove(all_texts[rand])
+    return list(set(selected_texts))
 
 def predict_cron():
     # start = datetime.today().replace(hour=0,minute=0,second=0, microsecond=0)
@@ -174,21 +186,20 @@ def predict_cron():
             if p == i[1]:
                 temp[p].append(i[0]) 
         place_with_pred.append(temp)
-    predicted = summarize(place_with_pred)
+    predicted = summarize(place_with_pred, pred_list)
     predicted_id = str(uuid.uuid4())
     predicted_collection.insert_one({'id': predicted_id, 'predicted': predicted}).inserted_id
-    predicted_tweets_collection.insert_one({'id': str(uuid.uuid4()), 'predicted_tweets': example_text_summarize(find_summarize_max_emo(predicted), pred_list), 'predicted_id': predicted_id}).inserted_id
     
 
-schedule.every(5).minutes.do(predict_cron)
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# schedule.every(5).minutes.do(predict_cron)
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
     # testset = WordExecutor.to_scikitlearn_dataset(data=freq_test, attribute=sorted(u))
     # pred_list = clf.predict(testset)
     # print(pred_list)
-# if __name__ == '__main__':
-#     predict_cron()
+if __name__ == '__main__':
+    predict_cron()
 # start = datetime.datetime(2017, 2, 1)
 # end = datetime.datetime(2017, 2, 2)
 
