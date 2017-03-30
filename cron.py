@@ -10,6 +10,7 @@ import requests
 import schedule
 import uuid
 import random
+import json
 
 client = MongoClient('mongodb://10.0.1.3:27017/')
 db = client['SocialData']
@@ -83,10 +84,14 @@ def summarize(data, pred_list):
         temp['latitude'] = float(geolocation[0])
         temp['longitude'] = float(geolocation[1])
         max_emo_list = find_summarize_max_emo(temp)
-        temp['max_emo_list'] = max_emo_list
+        temp['max_emo'] = pickMaxEmo(max_emo_list)
         temp['predicted_texts'] = predicted_text_summarize(max_emo_list, pred_list, key)
         result.append(temp)
     return result
+
+def pickMaxEmo(max_emo_list):
+    rand = random.randint(0, len(max_emo_list) - 1)
+    return max_emo_list[rand]
 
 def find_summarize_max_emo(summarize_data):
     max_val = 0.0
@@ -187,7 +192,8 @@ def predict_cron():
         place_with_pred.append(temp)
     predicted = summarize(place_with_pred, pred_list)
     predicted_id = str(uuid.uuid4())
-    predicted_collection.insert_one({'id': predicted_id, 'predicted': predicted}).inserted_id
+    # predicted_collection.insert_one({'id': predicted_id, 'predicted': predicted}).inserted_id
+    r = requests.post('http://localhost:5005/predicted/save', data = json.dumps({'id': predicted_id, 'predicted': predicted}))
     
 
 schedule.every(5).minutes.do(predict_cron)
