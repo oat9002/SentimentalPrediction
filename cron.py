@@ -130,13 +130,13 @@ def predicted_text_summarize(max_emo_list, pred_list, place_id):
 
 def predict_cron():
     # start = datetime.today().replace(hour=0,minute=0,second=0, microsecond=0)
-    start = (datetime.now() - timedelta(hours=3)).replace(minute=0,second=0, microsecond=0)
+    start = (datetime.now() - timedelta(hours=3))
     start = start - timedelta(hours=7)
     end = datetime.today()
     end = end - timedelta(hours=7)
-    tweets = tweet_collection.find({"created_at": {"$gte": start, "$lte": end}})
+    tweets = requests.get('http://localhost:5005/tweet/date?start=' + str(start) + '&end=' + str(end))
     pred_list = []
-    for tw in tweets:
+    for tw in tweets.json()['tweets']:
         temp = []
         pred = []
         emo_count = []
