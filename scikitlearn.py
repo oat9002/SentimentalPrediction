@@ -47,6 +47,42 @@ def start_thread(thread_each_lap, threads):
             else:
                 break
 
+def predict_by_multinomial_naive_bay(data):
+    keywords = CSVExecutor.read_csv('./Dataset/lated_keyword.csv')[0]
+    clf = model.read_model_scikitlearn('./Dataset/mnnb.pkl')
+    
+    data_freq = []
+    total_thread = divided_thread_len_end(size=len(data), total_thread=4)
+    threads = []
+    for i in range(0, len(total_thread)):
+        if i != 0:
+            t = Thread(target=caculate_freq_for_thread, args=(total_thread[i - 1], total_thread[i], data, data_freq, keywords, 1))
+        else:
+            t = Thread(target=caculate_freq_for_thread, args=(0, total_thread[i], data, data_freq, keywords, 1))
+        threads.append(t)
+    start_thread(thread_each_lap=4, threads=threads)
+
+    result_set = WordExecutor.to_scikitlearn_dataset(data=data_freq, attribute=sorted(keywords))
+    predicted = clf.predict(result_set)
+    result = ['','','','','','','','']
+    if predicted[0] == 1:
+        result[0] = 'joy'
+    elif predicted[0] == 2:
+        result[1] == 'sadness' 
+    elif predicted[0] == 3:
+        result[2] = 'fear'
+    elif predicted == 4:
+        result[3] = 'anger'
+    elif predicted == 5:
+        result[4] == 'disgust'
+    elif predicted == 6:
+        result[5] = 'surprise'
+    elif predicted == 7:
+        result[6] = 'anticipation'
+    else:
+        result[7] = 'acceptance'
+    return result
+
 
 if __name__ == '__main__':
     now = time()
@@ -54,8 +90,9 @@ if __name__ == '__main__':
     clf = model.read_model_scikitlearn('./Dataset/mnnb.pkl')
     # model.save_model_scikitlearn(classifier=clf, path='output/mnnb_tfidf.pkl')
 
-    test = CSVExecutor.read_csv('./Dataset/For paper/train_2_formatted.csv')
-    
+    # test = CSVExecutor.read_csv('./Dataset/For paper/train_2_formatted.csv')
+    test = [['ฉันหิวข้าวเเล้ว']]
+
     freq_test = []
     total_thread = divided_thread_len_end(size=len(test), total_thread=4)
     threads = []
@@ -69,13 +106,13 @@ if __name__ == '__main__':
 
     print('Here')
     testset = WordExecutor.to_scikitlearn_dataset(data=freq_test, attribute=sorted(keywords))
-    test_target = WordExecutor.get_labeled_class(data=freq_test)
+    # test_target = WordExecutor.get_labeled_class(data=freq_test)
 
     predicted = clf.predict(testset)
     print(predicted)
 
-    np.mean(predicted == test_target)
-    print(metrics.accuracy_score(test_target, predicted))
+    # np.mean(predicted == test_target)
+    # print(metrics.accuracy_score(test_target, predicted))
     # print(time() - now)
     # print(metrics.classification_report(test_target, predicted))
     # print(metrics.classification_report(twenty_test.target, predicted, target_names=twenty_test.target_names))
